@@ -1,0 +1,44 @@
+{% load static %}
+
+<title>{{ object.name }}</title>
+<link rel="shortcut icon" href="{% static 'pl/img/logo.png' %}" type="image/x-icon">
+
+<a href="{% url 'pl:index' %}">Main Page</a>
+
+<h1>{{ object.name }}</h1>
+
+{% if object.portrait %}
+  <img src="{{ object.portrait.url }}" alt="{{ object.name }}" width="200">
+{% endif %}
+
+<p>Birth date: {{ object.birth_date }}</p>
+
+{% if object.wiki_link %}
+  <p><a href="{{ object.wiki_link }}" target="_blank">Wikipedia</a></p>
+{% endif %}
+
+{% if object.pl_list.exists %}
+    {% for pl in  object.pl_list.all %}
+  <div>
+  <a href="{% url 'pl:pl-detail-view' pk=pl.id %}">{{pl}}</a>
+  </div>
+    {% endfor %}
+
+{% endif %}
+
+<hr>
+<h3>Edit this Person</h3>
+<form method="post" action="{% url 'pl:update-person' %}">
+    {% csrf_token %}
+    <label>Name:</label>
+    <input type="text" name="name" value="{{ object.name }}"><br>
+    
+    <label>Wiki link:</label>
+    <input type="url" name="wiki_link" value="{{ object.wiki_link }}"><br>
+    
+    <label>Birth date:</label>
+    <input type="date" name="birth_date" value="{{ object.birth_date }}"><br>
+    
+    <input type="hidden" name="pk" value="{{ object.id }}">
+    <button type="submit">Submit</button>
+</form>

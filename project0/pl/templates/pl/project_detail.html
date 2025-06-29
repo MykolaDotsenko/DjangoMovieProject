@@ -1,0 +1,13 @@
+{% load static%}
+
+<title>{{object}}</title>
+
+<h1>{{object}}</h1>
+
+<p>Started at {{object.start_date}}</p>
+<p>Finished at {{object.deadline_date}}</p>
+    {% for pl in  object.languages.all %}
+    <div>
+        <a href="{% url 'pl:pl-detail-view' pk=pl.id %}">{{pl}}</a>
+    </div>
+    {% endfor %}

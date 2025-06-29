@@ -1,0 +1,46 @@
+{% load static%}
+
+<title>Main Page</title>
+<link
+  rel="shortcut icon"
+  href="{% static 'pl/img/logo.png' %}"
+  type="image/x-icon"
+/>
+
+<h1>Hello World!!</h1>
+
+<ol>
+  {% for item in object_list %}
+  <li><a href="{% url 'pl:pl-detail-view' pk=item.id %}">{{ item }}</a></li>
+  {% endfor %}
+</ol>
+
+<h2>People</h2>
+<ol>
+  {% for person in person_list %}
+  <li>
+    <a href="{% url 'pl:person-detail-view' pk=person.id %}"
+      >{{ person.name }}</a
+    >
+  </li>
+  {% endfor %}
+</ol>
+
+<h2>Projects</h2>
+<ol>
+  {% for project in project_list %}
+  <li>
+    <a href="{% url 'pl:project-detail-view' pk=project.id %}">{{ project }}</a>
+  </li>
+  {% endfor %}
+</ol>
+
+
+<hr>
+
+<h2>Create new project</h2>
+<form action="{% url 'pl:add-new-project' %}" method="post">
+  {% csrf_token %}
+  {{ project_form }}
+  <input type="submit" value="Add">
+</form>

@@ -1,0 +1,33 @@
+{% load static%}
+
+
+<title>{{object}}</title>
+<link rel="shortcut icon" href="{% static 'pl/img/logo.png' %}" type="image/x-icon">
+<a href="{% url 'pl:index'%}">Main Page</a>      
+<h1>{{object}}</h1>
+{% if object.logo %}
+<img src="{{object.logo.url}}" alt="{{object.name}}" width="200">
+{% endif %}
+
+<p>{{object.description}}</p>
+<h1>{{object.rating}}</h1>
+<p>Created in {{object.create_date.year}}</p>
+{% if object.creator %}
+<a href="{% url 'pl:person-detail-view' pk=object.creator.id %}">{{object.creator}}</a>
+{% endif %}
+<br> 
+
+<a href="{{object.wiki_link}}" target='_blank'>Wikipedia</a>
+
+<div>
+    <form method="post" action="{% url 'pl:update-rating' %}">
+        {% csrf_token %}
+        <input type="number" name="rating" value="{{object.rating}}" step="0.1">
+        <br/>
+        <input type="text" name="name" value="{{object.name}}">
+        
+        <input type="hidden" name="pk" value="{{object.id}}">
+        <br/>
+        <button type="submit">Submit</button>
+    </form>
+</div>
