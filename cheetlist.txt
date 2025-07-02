@@ -6,7 +6,7 @@ python manage.py startapp pl
 python manage.py makemigrations
 python manage.py migrate
 
-cd C:\Users\user\PycharmProjects\TrainingProject2\project0
+cd C:\Users\user\PycharmProjects\TrainingProject2\project1
 
 python manage.py runserver 8001
 
@@ -22,10 +22,13 @@ ProgrammingLanguage.objects.all()
 
 дз на странице персонs сдеать форму изминения персоны
 
-
+--------------------------------------------------------------
 создать апи для языков програмирования и для проектов. для определеных полей,  сереализатор - вью - урл 
 
 
+_____________________________________________________________________
 
 
 добавить актеров и фильмов, по 10шт
+
+передать актеров также как и фильмы, без рейтингов, лицо и ссылка на страницу актёра, добавить больше фильмов и актеров - Most popular celebrities

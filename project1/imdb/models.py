@@ -11,7 +11,7 @@ class Person(models.Model):
     last_name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     gender = models.CharField(max_length=1, choices=gender_choices)
-    portrait = models.ImageField(upload_to="persons")
+    portrait = models.ImageField(upload_to="persons", blank=True)
     birth_date = models.DateField(blank=True)
     wiki_link = models.URLField(blank=True)
 
@@ -22,7 +22,7 @@ class Person(models.Model):
 class Movie(models.Model):
     title = models.CharField(max_length=100)
     rating = models.FloatField(default=0.0)
-    poster = models.ImageField(upload_to="posters")
+    poster = models.ImageField(upload_to="posters", blank=True)
     release_date = models.DateField(blank=True)
     duration = models.IntegerField(blank=True)
     age_rating = models.CharField(max_length=5, choices=age_rating_choices)
