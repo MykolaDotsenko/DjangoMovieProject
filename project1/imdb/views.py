@@ -8,9 +8,12 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['movie_list'] = Movie.objects.order_by('?')[:4]
-        context['person_list'] = Person.objects.order_by('?')[:4]
+        context['movie_list'] = Movie.objects.order_by('?')[:6]
+        context['person_list'] = Person.objects.order_by('?')[:6]
         
         return context
 
 
+class MovieListView(ListView):
+    # model = Movie
+    queryset = Movie.objects.order_by("title")

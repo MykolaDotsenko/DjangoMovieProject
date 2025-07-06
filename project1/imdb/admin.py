@@ -3,7 +3,7 @@ from .models import *
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'gender', 'birth_date' )
+    list_display = ('__str__', 'gender', 'birth_date', "portrait")
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
