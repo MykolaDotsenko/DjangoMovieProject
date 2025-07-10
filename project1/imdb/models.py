@@ -1,4 +1,5 @@
 from django.db import models
+from embed_video.fields import EmbedVideoField
 
 
 
@@ -27,6 +28,7 @@ class Movie(models.Model):
     duration = models.IntegerField(blank=True)
     age_rating = models.CharField(max_length=5, choices=age_rating_choices)
     wiki_link = models.URLField(blank=True)
+    trailer = EmbedVideoField(default="https://www.youtube.com/watch?v=SgmBsEoP1GI")
 
     def __str__(self):
         return self.title

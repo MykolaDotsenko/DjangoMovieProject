@@ -17,3 +17,7 @@ class IndexView(TemplateView):
 class MovieListView(ListView):
     # model = Movie
     queryset = Movie.objects.order_by("title")
+
+class MovieDetailView(DetailView):
+    model = Movie
+    

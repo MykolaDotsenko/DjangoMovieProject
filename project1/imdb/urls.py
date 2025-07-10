@@ -5,5 +5,7 @@ app_name = "imdb"
 
 urlpatterns = [
     path('', IndexView.as_view(), name="index"),
-    path('movie/list/', MovieListView.as_view(), name="movie-list")
+    path('movie/list/', MovieListView.as_view(), name="movie-list"),
+    path('movie/<int:pk>/', MovieDetailView.as_view(), name="movie-detail"),
+
    ]
