@@ -1,11 +1,10 @@
-{% extends 'imdb/base.html' %}
-{% load static %}
-{% block title %}All Movies{% endblock %}
-
+{% extends 'imdb/base.html' %} {% load static %} {% load embed_video_tags %}
+{%block title %}{{ object }}{% endblock %} 
 {% block main %}
-<h1 class="text-warning mb-4">All Movies</h1>
+<h1 class="text-warning">Genre: {{object}}</h1>
+
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
-    {% for movie in object_list %}
+    {% for movie in object.movies.all %}
     <div class="col text-center">
         <div class="card h-100 bg-dark text-light">
             {% if movie.poster %}
@@ -27,4 +26,5 @@
     </div>
     {% endfor %}
 </div>
+
 {% endblock %}

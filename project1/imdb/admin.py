@@ -7,8 +7,11 @@ class PersonAdmin(admin.ModelAdmin):
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
-    list_display = ('__str__', )
+    list_display = ('__str__', 'genres_str')
+    
 
-
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
+    list_display= ('name',)
 
 # Register your models here.

@@ -29,6 +29,18 @@ class Movie(models.Model):
     age_rating = models.CharField(max_length=5, choices=age_rating_choices)
     wiki_link = models.URLField(blank=True)
     trailer = EmbedVideoField(default="https://www.youtube.com/watch?v=SgmBsEoP1GI")
+    genres = models.ManyToManyField("Genre", related_name="movies", blank=True)
+
+    def genres_str(self):
+        return " ".join(self.genres.order_by('name').values_list("name", flat=True)) 
 
     def __str__(self):
         return self.title
+    
+
+class Genre(models.Model):
+    name = models.CharField(max_length=100)
+
+
+    def __str__(self):
+        return self.name

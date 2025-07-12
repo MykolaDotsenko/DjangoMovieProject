@@ -20,4 +20,7 @@ class MovieListView(ListView):
 
 class MovieDetailView(DetailView):
     model = Movie
-    
+
+class GenreDetailView(DetailView):
+    model = Genre
+    template_name = "imdb/genre.html"
