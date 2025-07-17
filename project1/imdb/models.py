@@ -6,6 +6,8 @@ from embed_video.fields import EmbedVideoField
 gender_choices = [('m',"Male"), ('f', 'Female')]
 age_rating_choices = [('G', 'General Audiences'), ("PG-13", 'Parents Strongly Cautioned'),
                        ('R', 'Restricted'), ('NC-17', 'Adults Only') ]
+role_choices = [('A', 'Actor'), ("D", 'Director'),
+                       ('P', 'Producer'), ('C', 'Music Composer') ]
 
 
 class Person(models.Model):
@@ -37,6 +39,14 @@ class Movie(models.Model):
     def __str__(self):
         return self.title
     
+    def get_actors(self):
+        actors = Person.objects.filter(
+            participation__movie=self,
+            participation__role='A'
+        )
+        return actors
+
+    
 
 class Genre(models.Model):
     name = models.CharField(max_length=100)
@@ -44,3 +54,9 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.name
+
+class Participation(models.Model):
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    role = models.CharField(max_length=1, choices=role_choices)
+    

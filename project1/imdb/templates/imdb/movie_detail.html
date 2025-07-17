@@ -62,10 +62,42 @@
   <div class="row">
     <div class="col-6">
       {% for genre in object.genres.all %}
-      <a href="{% url 'imdb:genre-detail' pk=genre.id %}" class="text-light text-decoration-none">{{genre}}</a>
+      <a
+        href="{% url 'imdb:genre-detail' pk=genre.id %}"
+        class="text-light text-decoration-none"
+        >{{genre}}</a
+      >
       {% endfor %}
     </div>
   </div>
+  <div class="row">
+    <div class="col-6"> 
+      <p>Cast:</p>
+      <div class="row">
+        {% for actor in object.get_actors %}
+        <div class="col-6">
+          <div class="row">
+            <div class="col-4">
+              <img
+                src="{{actor.portrait.url}}"
+                width="100"
+                height="100"
+                class="object-fit-cover rounded-circle"
+              />
+            </div>
+            <div class="col-8">
+              <a
+                href="{% url 'imdb:person-detail' pk=actor.id %}"
+                class="text-light text-decoration-none"
+                >{{actor}}</a
+              >
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 </div>
-{% endblock %}
-console.log('');
+
+{% endblock %} console.log('');

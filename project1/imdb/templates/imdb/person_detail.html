@@ -1,0 +1,14 @@
+{% extends 'imdb/base.html' %}
+{% load static %}
+{% block title %}{{ object.first_name }} {{ object.last_name }}{% endblock %}
+
+{% block main %}
+<div class="text-center mt-5">
+  {% if object.portrait %}
+    <img src="{{ object.portrait.url }}" class="rounded mb-3" style="width:200px; height:280px; object-fit:cover;">
+  {% else %}
+    <img src="{% static 'imdb/images/user.png' %}" class="rounded mb-3" style="width:200px; height:280px; object-fit:cover;">
+  {% endif %}
+  <h2 class="mb-3">{{ object.first_name }} {{ object.last_name }}</h2>
+</div>
+{% endblock %}

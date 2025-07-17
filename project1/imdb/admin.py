@@ -14,4 +14,8 @@ class MovieAdmin(admin.ModelAdmin):
 class GenreAdmin(admin.ModelAdmin):
     list_display= ('name',)
 
+@admin.register(Participation)
+class ParticipationAdmin(admin.ModelAdmin):
+    list_display = ('movie', 'person', 'role')
+
 # Register your models here.

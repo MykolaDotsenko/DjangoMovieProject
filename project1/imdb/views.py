@@ -24,3 +24,11 @@ class MovieDetailView(DetailView):
 class GenreDetailView(DetailView):
     model = Genre
     template_name = "imdb/genre.html"
+
+class PersonListView(ListView):
+    model = Person
+    queryset = Person.objects.order_by("last_name", "first_name")
+
+class PersonDetailView(DetailView):
+    model = Person
+ 
