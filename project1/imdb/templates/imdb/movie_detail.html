@@ -41,13 +41,6 @@
         class="img-fluid rounded border border-secondary shadow-sm"
         style="max-height: 420px"
       />
-      {% else %}
-      <img
-        src="{% static 'imdb/images/no_poster.png' %}"
-        alt="No poster"
-        class="img-fluid rounded border border-secondary shadow-sm"
-        style="max-height: 420px"
-      />
       {% endif %}
     </div>
 
@@ -70,8 +63,8 @@
       {% endfor %}
     </div>
   </div>
-  <div class="row">
-    <div class="col-6"> 
+ <div class="row">
+    <div class="col-6">
       <p>Cast:</p>
       <div class="row">
         {% for actor in object.get_actors %}
@@ -97,7 +90,39 @@
         {% endfor %}
       </div>
     </div>
-  </div>
 </div>
 
-{% endblock %} console.log('');
+
+<div class="row mt-4">
+    <div class="col-6">
+      <p>Directors:</p>
+      <div class="row">
+        {% for director in object.get_directors %}
+        <div class="col-6">
+          <div class="row">
+            <div class="col-4">
+              <img
+                src="{{director.portrait.url}}"
+                width="100"
+                height="100"
+                class="object-fit-cover rounded-circle"
+              />
+            </div>
+            <div class="col-8">
+              <a
+                href="{% url 'imdb:person-detail' pk=director.id %}"
+                class="text-light text-decoration-none"
+                >{{ director}}</a
+              >
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col">No directors listed.</div>
+        {% endfor %}
+      </div>
+    </div>
+</div>
+
+
+{% endblock %}

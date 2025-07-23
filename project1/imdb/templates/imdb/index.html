@@ -3,6 +3,7 @@
 {% block title %}IMDB{% endblock %}
 
 {% block main %}
+
         <h1 class="text-warning">Best Movies</h1>
         <div class="row">
             {% for movie in movie_list %}
@@ -27,8 +28,9 @@
                 </div>
             </div>
             {% endfor %}
-
         </div>
+
+
         <a href="{% url 'imdb:movie-list' %}" class="text-warning text-decoration-none fs-4">All Movies</a>
         <hr/>
         <h1 class="text-warning">Most popular celebrities</h1>
@@ -44,13 +46,13 @@
                     {% endif %}
                 </div>
                 <div class="h-25">
-                    <a href="#" class="text-light text-decoration-none fs-5">
+                    <a href="{% url 'imdb:person-detail' pk=person.id %}" class="text-light text-decoration-none fs-5" >
                         {{person}}
                     </a>
-                   
                 </div>
             </div>
             {% endfor %}
-
         </div>
+         <a href="{% url 'imdb:person-list' %}" class="text-warning text-decoration-none fs-4">All Actors</a>
+        <hr/>
         {% endblock %}

@@ -10,8 +10,6 @@
     <a href="{% url 'imdb:person-detail' pk=person.id %}" class="text-decoration-none text-light">
       {% if person.portrait %}
         <img src="{{ person.portrait.url }}" class="rounded mb-2" style="width:100px; height:140px; object-fit:cover;">
-      {% else %}
-        <img src="{% static 'imdb/images/user.png' %}" class="rounded mb-2" style="width:100px; height:140px; object-fit:cover;">
       {% endif %}
       <div>{{ person.first_name }} {{ person.last_name }}</div>
     </a>
