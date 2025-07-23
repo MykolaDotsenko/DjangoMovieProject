@@ -1,6 +1,12 @@
 from django.contrib import admin
 from .models import *
 from django.utils.html import format_html
+from embed_video.admin import AdminVideoMixin
+
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'avatar')
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
@@ -23,7 +29,7 @@ class PersonAdmin(admin.ModelAdmin):
 
 
 @admin.register(Movie)
-class MovieAdmin(admin.ModelAdmin):
+class MovieAdmin(AdminVideoMixin, admin.ModelAdmin):
     list_display = ('__str__', 'genres_str')
     ordering = ['title']
     

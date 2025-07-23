@@ -1,4 +1,4 @@
-{% extends 'imdb/base.html' %}
+{% extends 'imdb/base.html' %} {% load embed_video_tags %}
 {% load static %}
 {% block title %}{{ object.first_name }} {{ object.last_name }}{% endblock %}
 
@@ -25,6 +25,8 @@
                 </td>
             </tr>
         </table>
+        {% video object.get_trailer 'medium' %}
     </div>
 </div>
+
 {% endblock %}

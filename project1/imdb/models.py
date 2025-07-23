@@ -1,5 +1,11 @@
 from django.db import models
 from embed_video.fields import EmbedVideoField
+from django.contrib.auth.models import User
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to="avatars", blank=True)
 
 
 
@@ -17,6 +23,12 @@ class Person(models.Model):
     portrait = models.ImageField(upload_to="persons")
     birth_date = models.DateField(blank=True)
     wiki_link = models.URLField(blank=True)
+
+    def get_trailer(self):
+        movies = Movie.objects.filter(
+            participation__person=self
+        )
+        return movies.values_list("trailer", flat=True).order_by('?').first()
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name
