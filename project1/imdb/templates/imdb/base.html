@@ -47,9 +47,9 @@
             <img src="{{user.profile.avatar.url}}" width="50" />
             {{user}}
           </div>
-          <a href="#" class="text-decoration-none">Sign Out</a>
+          <a href="{% url 'imdb:user-sign-out' %}" class="text-decoration-none">Sign Out</a>
           {% else %}
-          <a href="#" class="text-decoration-none">Sign In</a>
+          <a href="{% url 'imdb:authorization-view' %}" class="text-decoration-none">Sign In</a> 
           {% endif %}
         </div>
       </div>
