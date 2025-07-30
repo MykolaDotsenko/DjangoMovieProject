@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib.auth import logout, login, authenticate
 from django.shortcuts import redirect
+from django.contrib import messages
 from .models import *
 from .forms import *
 
@@ -45,8 +46,6 @@ class AuthorizationView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = AuthorizationForm()
-        
-        print("!!!!", context)
         return context
     
     def post(self, request):
@@ -54,4 +53,33 @@ class AuthorizationView(TemplateView):
         username = request.POST.get('username')
         password = request.POST.get('password')
         print(username, password)
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+        else:
+            messages.add_message(request, messages.INFO, "Wrong username or password")
+
         return redirect('imdb:index')
+
+
+class CreateAccountView(TemplateView):
+    template_name = 'imdb/create_account.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = CreateAccountForm()
+        return context
+    
+    def post(self, request):
+        username = request.POST.get('username')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+
+        if User.objects.filter(username=username).exists():
+            messages.add_message(request, messages.INFO, "Username already exists")
+            return redirect('imdb:create-account-view')
+        elif password1 != password2:
+            messages.add_message(request, messages.INFO, "Passwords dont match")
+            return redirect('imdb:create-account-view')           
+        else:
+            return redirect('imdb:index')

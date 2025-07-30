@@ -12,5 +12,5 @@ urlpatterns = [
     path('person/<int:pk>/', PersonDetailView.as_view(), name="person-detail"),
     path('user/sign/out/', user_sign_out, name="user-sign-out"),
     path('authorization/page/', AuthorizationView.as_view(), name="authorization-view"),
-
+    path('account/create/page/', CreateAccountView.as_view(), name="create-account-view"),
 ]
