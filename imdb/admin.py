@@ -1,13 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html_join
 
-from .models import Genre, Movie, Participation, Person, Profile
-
-
-@admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "avatar")
-    search_fields = ("user__username",)
+from .models import Genre, Movie, Participation, Person
 
 
 @admin.register(Person)
@@ -16,6 +10,9 @@ class PersonAdmin(admin.ModelAdmin):
     list_filter = ("gender",)
     search_fields = ("first_name", "last_name")
     ordering = ("first_name", "last_name")
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related("credits__movie")
 
     @admin.display(ordering="first_name", description="Name")
     def name(self, obj):
@@ -26,7 +23,7 @@ class PersonAdmin(admin.ModelAdmin):
         return format_html_join(
             "",
             "{}<br>",
-            ((participation.movie.title,) for participation in obj.participation_set.all()),
+            ((credit.movie.title,) for credit in obj.credits.all()),
         )
 
     @admin.display(description="Roles")
@@ -34,10 +31,7 @@ class PersonAdmin(admin.ModelAdmin):
         return format_html_join(
             "",
             "{}<br>",
-            (
-                (participation.get_role_display(),)
-                for participation in obj.participation_set.all()
-            ),
+            ((credit.get_role_display(),) for credit in obj.credits.all()),
         )
 
 
@@ -49,16 +43,21 @@ class MovieAdmin(admin.ModelAdmin):
     ordering = ("title",)
     filter_horizontal = ("genres",)
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related("genres")
+
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
     list_display = ("name",)
     search_fields = ("name",)
+    ordering = ("name",)
 
 
 @admin.register(Participation)
 class ParticipationAdmin(admin.ModelAdmin):
     list_display = ("movie", "person", "role")
     list_filter = ("role",)
+    list_select_related = ("movie", "person")
     search_fields = ("movie__title", "person__first_name", "person__last_name")
     ordering = ("movie__title", "person__last_name")

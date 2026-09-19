@@ -1,34 +1,63 @@
 {% extends 'imdb/base.html' %}
 {% load static %}
-{% block title %}{{ object }} · MovieShelf{% endblock %}
+{% block title %}{{ person }} · MovieShelf{% endblock %}
 
 {% block main %}
 <section class="pt-5">
   <a class="small link-warning text-decoration-none" href="{% url 'imdb:person-list' %}">
-    <i class="fa-solid fa-arrow-left me-1"></i> Back to people
+    <i class="fa-solid fa-arrow-left me-1" aria-hidden="true"></i>
+    Back to people
   </a>
 
   <div class="row g-4 mt-1">
     <div class="col-12 col-md-4 col-lg-3">
       <div class="person-photo rounded-4">
-        {% if object.portrait %}<img src="{{ object.portrait.url }}" alt="{{ object }}">
-        {% else %}<img src="{% static 'imdb/images/user.png' %}" alt="">{% endif %}
+        {% if person.portrait %}
+          <img src="{{ person.portrait.url }}" alt="{{ person }}">
+        {% else %}
+          <img src="{% static 'imdb/images/user.png' %}" alt="">
+        {% endif %}
       </div>
     </div>
 
     <div class="col-12 col-md-8 col-lg-9">
       <div class="detail-panel p-4 p-lg-5 h-100">
         <div class="eyebrow mb-2">Person</div>
-        <h1 class="display-5 fw-bold mb-3">{{ object }}</h1>
+        <h1 class="display-5 fw-bold mb-3">{{ person }}</h1>
         <dl class="row mb-4">
           <dt class="col-sm-3 text-muted-app">Gender</dt>
-          <dd class="col-sm-9">{{ object.get_gender_display }}</dd>
+          <dd class="col-sm-9">{{ person.get_gender_display }}</dd>
           <dt class="col-sm-3 text-muted-app">Birth date</dt>
-          <dd class="col-sm-9">{{ object.birth_date|date:"F j, Y" }}</dd>
+          <dd class="col-sm-9">
+            {% if person.birth_date %}
+              {{ person.birth_date|date:"F j, Y" }}
+            {% else %}
+              Unknown
+            {% endif %}
+          </dd>
         </dl>
         <div class="d-flex flex-wrap gap-2">
-          {% if object.wiki_link %}<a class="btn btn-outline-light" href="{{ object.wiki_link }}" target="_blank" rel="noopener noreferrer">Wikipedia</a>{% endif %}
-          {% if featured_trailer %}<a class="btn btn-warning" href="{{ featured_trailer }}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-play me-1"></i> Featured trailer</a>{% endif %}
+          {% if person.wiki_link %}
+            <a
+              class="btn btn-outline-light"
+              href="{{ person.wiki_link }}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Wikipedia
+            </a>
+          {% endif %}
+          {% if featured_trailer %}
+            <a
+              class="btn btn-warning"
+              href="{{ featured_trailer }}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i class="fa-solid fa-play me-1" aria-hidden="true"></i>
+              Featured trailer
+            </a>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -39,9 +68,16 @@
   <h2 class="h4 mb-3">Filmography</h2>
   {% for credit in credits %}
     <div class="credit-row d-flex justify-content-between gap-3 py-3">
-      <a class="text-light text-decoration-none" href="{% url 'imdb:movie-detail' pk=credit.movie.pk %}">{{ credit.movie.title }}</a>
+      <a
+        class="text-light text-decoration-none"
+        href="{% url 'imdb:movie-detail' pk=credit.movie.pk %}"
+      >
+        {{ credit.movie.title }}
+      </a>
       <span class="text-muted-app">{{ credit.get_role_display }}</span>
     </div>
-  {% empty %}<p class="text-muted-app mb-0">No credits have been added yet.</p>{% endfor %}
+  {% empty %}
+    <p class="text-muted-app mb-0">No credits have been added yet.</p>
+  {% endfor %}
 </section>
 {% endblock %}

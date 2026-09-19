@@ -26,8 +26,13 @@ body {
   object-fit: contain;
 }
 
-.hero { padding: 4.5rem 0 2.5rem; }
-.hero-copy { max-width: 720px; }
+.hero {
+  padding: 4.5rem 0 2.5rem;
+}
+
+.hero-copy {
+  max-width: 720px;
+}
 
 .eyebrow {
   color: var(--accent);
@@ -57,7 +62,9 @@ body {
 .movie-card,
 .person-card {
   overflow: hidden;
-  transition: transform 160ms ease, border-color 160ms ease;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease;
 }
 
 .movie-card:hover,
@@ -68,8 +75,8 @@ body {
 
 .poster-wrap {
   aspect-ratio: 2 / 3;
-  background: var(--surface-raised);
   overflow: hidden;
+  background: var(--surface-raised);
 }
 
 .poster-wrap img,
@@ -80,8 +87,8 @@ body {
 }
 
 .poster-placeholder {
-  height: 100%;
   display: grid;
+  height: 100%;
   place-items: center;
   color: var(--muted);
   font-size: 2rem;
@@ -93,8 +100,20 @@ body {
   background: var(--surface-raised);
 }
 
-.text-muted-app { color: var(--muted); }
-.rating { color: var(--accent); font-weight: 700; }
+.avatar-sm {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+}
+
+.text-muted-app {
+  color: var(--muted);
+}
+
+.rating {
+  color: var(--accent);
+  font-weight: 700;
+}
 
 .genre-chip {
   display: inline-flex;
@@ -110,16 +129,20 @@ body {
   color: var(--accent);
 }
 
-.search-shell { max-width: 680px; }
+.search-shell {
+  max-width: 680px;
+}
 
 .form-control,
 .form-control:focus {
-  background: #121419;
   border-color: var(--border);
+  background: #121419;
   color: #fff;
 }
 
-.form-control::placeholder { color: #737b86; }
+.form-control::placeholder {
+  color: #737b86;
+}
 
 .form-control:focus {
   border-color: rgba(245, 197, 24, 0.65);
@@ -138,7 +161,9 @@ body {
   font-size: 0.9rem;
 }
 
-.credit-row + .credit-row { border-top: 1px solid var(--border); }
+.credit-row + .credit-row {
+  border-top: 1px solid var(--border);
+}
 
 .footer {
   border-top: 1px solid var(--border);
@@ -146,14 +171,14 @@ body {
 }
 
 .page-link {
-  background: var(--surface);
   border-color: var(--border);
+  background: var(--surface);
   color: #f8f9fa;
 }
 
 .page-link:hover {
-  background: var(--surface-raised);
   border-color: rgba(245, 197, 24, 0.45);
+  background: var(--surface-raised);
   color: var(--accent);
 }
 

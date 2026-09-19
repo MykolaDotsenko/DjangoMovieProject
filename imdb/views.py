@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
-from django.db.models import Count, Q
+from django.db.models import Count, Prefetch, Q
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
@@ -14,11 +14,9 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["movie_list"] = Movie.objects.prefetch_related("genres").order_by(
-            "-rating", "title"
-        )[:6]
-        context["person_list"] = (
-            Person.objects.annotate(credit_count=Count("participation"))
+        context["featured_movies"] = Movie.objects.order_by("-rating", "title")[:6]
+        context["featured_people"] = (
+            Person.objects.annotate(credit_count=Count("credits"))
             .order_by("-credit_count", "last_name", "first_name")[:6]
         )
         return context
@@ -26,10 +24,11 @@ class IndexView(TemplateView):
 
 class MovieListView(ListView):
     model = Movie
+    context_object_name = "movies"
     paginate_by = 12
 
     def get_queryset(self):
-        queryset = Movie.objects.prefetch_related("genres").order_by("title")
+        queryset = Movie.objects.order_by("title")
         query = self.request.GET.get("q", "").strip()
         if query:
             queryset = queryset.filter(
@@ -45,6 +44,7 @@ class MovieListView(ListView):
 
 class MovieDetailView(DetailView):
     model = Movie
+    context_object_name = "movie"
 
     def get_queryset(self):
         return Movie.objects.prefetch_related("genres")
@@ -52,38 +52,53 @@ class MovieDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         credits = list(
-            Participation.objects.filter(movie=self.object)
-            .select_related("person")
-            .order_by("person__last_name", "person__first_name")
+            self.object.credits.select_related("person").order_by(
+                "person__last_name",
+                "person__first_name",
+            )
         )
-        context["actors"] = [credit.person for credit in credits if credit.role == "A"]
-        context["directors"] = [credit.person for credit in credits if credit.role == "D"]
+        context["actors"] = [
+            credit.person
+            for credit in credits
+            if credit.role == Participation.Role.ACTOR
+        ]
+        context["directors"] = [
+            credit.person
+            for credit in credits
+            if credit.role == Participation.Role.DIRECTOR
+        ]
         return context
 
 
 class GenreDetailView(DetailView):
     model = Genre
+    context_object_name = "genre"
     template_name = "imdb/genre.html"
 
     def get_queryset(self):
-        return Genre.objects.prefetch_related("movies")
+        return Genre.objects.prefetch_related(
+            Prefetch("movies", queryset=Movie.objects.order_by("title"))
+        )
 
 
 class PersonListView(ListView):
     model = Person
-    queryset = Person.objects.order_by("last_name", "first_name")
+    context_object_name = "people"
     paginate_by = 18
+
+    def get_queryset(self):
+        return Person.objects.order_by("last_name", "first_name")
 
 
 class PersonDetailView(DetailView):
     model = Person
+    context_object_name = "person"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["credits"] = (
-            Participation.objects.filter(person=self.object)
-            .select_related("movie")
-            .order_by("-movie__release_date", "movie__title")
+        context["credits"] = self.object.credits.select_related("movie").order_by(
+            "-movie__release_date",
+            "movie__title",
         )
         context["featured_trailer"] = self.object.get_featured_trailer()
         return context

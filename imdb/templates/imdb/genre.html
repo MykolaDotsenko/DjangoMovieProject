@@ -1,28 +1,19 @@
 {% extends 'imdb/base.html' %}
-{% block title %}{{ object }} movies · MovieShelf{% endblock %}
+{% block title %}{{ genre }} movies · MovieShelf{% endblock %}
 
 {% block main %}
 <section class="pt-5 pb-4">
   <div class="eyebrow mb-2">Genre</div>
-  <h1 class="display-6 fw-bold">{{ object }}</h1>
+  <h1 class="display-6 fw-bold">{{ genre }}</h1>
 </section>
 
 <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
-  {% for movie in object.movies.all %}
+  {% for movie in genre.movies.all %}
     <div class="col">
-      <article class="movie-card h-100">
-        <a class="text-decoration-none text-light" href="{% url 'imdb:movie-detail' pk=movie.pk %}">
-          <div class="poster-wrap">
-            {% if movie.poster %}<img src="{{ movie.poster.url }}" alt="{{ movie.title }} poster">
-            {% else %}<div class="poster-placeholder"><i class="fa-regular fa-image"></i></div>{% endif %}
-          </div>
-          <div class="p-3">
-            <h2 class="h6 mb-2">{{ movie.title }}</h2>
-            <span class="rating small"><i class="fa-solid fa-star"></i> {{ movie.rating|floatformat:1 }}</span>
-          </div>
-        </a>
-      </article>
+      {% include "imdb/components/movie_card.html" with movie=movie only %}
     </div>
-  {% empty %}<p class="text-muted-app">No movies in this genre yet.</p>{% endfor %}
+  {% empty %}
+    <p class="text-muted-app">No movies in this genre yet.</p>
+  {% endfor %}
 </div>
 {% endblock %}
