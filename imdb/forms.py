@@ -1,33 +1,25 @@
-from django import forms
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
-class AuthorizationForm(forms.Form):
-    username = forms.CharField(
-        max_length=150,
-        widget=forms.TextInput(attrs={'placeholder': 'Username'})
-    )
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
-    )
 
+class BootstrapFormMixin:
+    def apply_bootstrap_styles(self) -> None:
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+            field.widget.attrs.setdefault("placeholder", field.label)
+
+
+class SignInForm(BootstrapFormMixin, AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs['class'] = 'form-control my-2'
+        self.apply_bootstrap_styles()
+        self.fields["username"].widget.attrs["autocomplete"] = "username"
+        self.fields["password"].widget.attrs["autocomplete"] = "current-password"
 
 
-class CreateAccountForm(forms.Form):
-    username = forms.CharField(
-        max_length=150,
-        widget=forms.TextInput(attrs={'placeholder': 'Username'})
-    )
-    password1 = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
-    )
-    password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'})
-    )
-
+class SignUpForm(BootstrapFormMixin, UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs['class'] = 'form-control my-2'
+        self.apply_bootstrap_styles()
+        self.fields["username"].widget.attrs["autocomplete"] = "username"
+        self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
+        self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
