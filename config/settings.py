@@ -108,9 +108,7 @@ elif DATABASE_BACKEND == "postgresql":
         }
     }
 else:
-    raise ImproperlyConfigured(
-        "DJANGO_DATABASE_BACKEND must be either 'sqlite' or 'postgresql'."
-    )
+    raise ImproperlyConfigured("DJANGO_DATABASE_BACKEND must be either 'sqlite' or 'postgresql'.")
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
