@@ -1,46 +1,64 @@
 from django.contrib import admin
-from .models import *
-from django.utils.html import format_html
-from embed_video.admin import AdminVideoMixin
+from django.utils.html import format_html_join
+
+from .models import Genre, Movie, Participation, Person, Profile
 
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'avatar')
+    list_display = ("user", "avatar")
+    search_fields = ("user__username",)
+
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'gender', 'birth_date', "portrait", 'movie_list', 'role_list')
-    ordering = ['first_name']
+    list_display = ("name", "gender", "birth_date", "movie_list", "role_list")
+    list_filter = ("gender",)
+    search_fields = ("first_name", "last_name")
+    ordering = ("first_name", "last_name")
 
-    def movie_list(self, obj):
-        titles = [p.movie.title for p in obj.participation_set.all()]
-        return format_html('<br>'.join(titles))
-    movie_list.short_description = "Movies"
-
-    def role_list(self, obj):
-        roles = [p.get_role_display() for p in obj.participation_set.all()]
-        return format_html('<br>'.join(roles))
-    role_list.short_description = "Roles"
-
-    @admin.display(ordering='first_name', description='Name')
-    def __str__(self, obj):
+    @admin.display(ordering="first_name", description="Name")
+    def name(self, obj):
         return str(obj)
+
+    @admin.display(description="Movies")
+    def movie_list(self, obj):
+        return format_html_join(
+            "",
+            "{}<br>",
+            ((participation.movie.title,) for participation in obj.participation_set.all()),
+        )
+
+    @admin.display(description="Roles")
+    def role_list(self, obj):
+        return format_html_join(
+            "",
+            "{}<br>",
+            (
+                (participation.get_role_display(),)
+                for participation in obj.participation_set.all()
+            ),
+        )
 
 
 @admin.register(Movie)
-class MovieAdmin(AdminVideoMixin, admin.ModelAdmin):
-    list_display = ('__str__', 'genres_str')
-    ordering = ['title']
-    
+class MovieAdmin(admin.ModelAdmin):
+    list_display = ("title", "rating", "release_date", "genres_str")
+    list_filter = ("age_rating", "genres")
+    search_fields = ("title",)
+    ordering = ("title",)
+    filter_horizontal = ("genres",)
+
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
-    list_display= ('name',)
+    list_display = ("name",)
+    search_fields = ("name",)
+
 
 @admin.register(Participation)
 class ParticipationAdmin(admin.ModelAdmin):
-    list_display = ('movie', 'person', 'role')
-    ordering = ['movie__title']
-
-# Register your models here.
+    list_display = ("movie", "person", "role")
+    list_filter = ("role",)
+    search_fields = ("movie__title", "person__first_name", "person__last_name")
+    ordering = ("movie__title", "person__last_name")
