@@ -1,96 +1,209 @@
-# MovieShelf — Django movie catalog
+# MovieShelf
 
-A portfolio-grade Django application for browsing movies, genres, people and credits, with search, authentication and an admin interface.
+**A modern Django movie catalog focused on clean backend architecture, secure authentication, relational data modeling, and reliable engineering practices.**
 
-## What this project demonstrates
+MovieShelf lets users browse movies, genres, cast and directors, search the catalog, explore filmographies, and create accounts through Django's built-in authentication system.
 
-- Django 5.2 LTS application structure
-- server-rendered responsive UI with Bootstrap
-- relational modeling for movies, genres, people and participation roles
-- secure Django authentication and password validation
-- search and filtering
-- media handling with Pillow
-- automated tests and GitHub Actions CI
-- environment-based settings instead of committed secrets
+## Highlights
 
-## Stack
+- **Django 5.2 LTS** with a clean `config/` + app structure
+- relational modeling for **movies, genres, people, and participation roles**
+- search by **movie title or genre**
+- movie detail pages with **cast, directors, genres, ratings, trailers, and metadata**
+- people directory with **filmography**
+- Django-native **sign up, sign in, password validation, and CSRF-protected sign out**
+- responsive server-rendered UI with **Bootstrap 5**
+- environment-based configuration for secrets, debug mode, hosts, and CSRF origins
+- automated tests for core user flows
+- **Ruff + Django checks + migration consistency + tests** in GitHub Actions
+- CI verified on **Python 3.13 and 3.14**
 
-- Python 3.13 / 3.14
-- Django 5.2 LTS
-- SQLite for local/demo use
-- Bootstrap 5
-- Pillow
-- GitHub Actions
-- Ruff
+## Why this project is portfolio-ready
 
-## Project structure
+This project was modernized from an earlier learning application into a cleaner, maintainable Django codebase.
 
-    manage.py
-    config/             Django project configuration
-    imdb/               main application
-    data/demo.sqlite3   optional preloaded demo database
-    media_files/        demo media used by the sample database
+The focus is not only on features, but on engineering quality:
 
-The old learning-only project that previously lived in project0/ was removed from the active tree during the modernization. Its history remains available in Git.
+- conventional project structure
+- framework-native authentication instead of custom password logic
+- deterministic and readable ORM queries
+- reduced dependency surface
+- repository hygiene
+- automated validation in CI
+- responsive and accessible UI states
+- clear local setup and demo data
+
+## Tech stack
+
+| Area | Technology |
+| --- | --- |
+| Backend | Python, Django 5.2 LTS |
+| Database | SQLite for local/demo use |
+| Frontend | Django Templates, Bootstrap 5, CSS |
+| Media | Pillow |
+| Quality | Ruff, Django system checks, automated tests |
+| CI | GitHub Actions |
+| Supported Python | 3.13, 3.14 |
+
+## Core features
+
+### Movies
+- featured movies ordered by rating
+- paginated movie catalog
+- search by title and genre
+- movie detail pages
+- cast and director relationships
+- genre navigation
+- rating, release year, duration, age rating, trailer, and Wikipedia links
+
+### People
+- actors, directors, producers, and composers
+- paginated people directory
+- individual profile pages
+- filmography with participation role
+- featured trailer based on related movies
+
+### Accounts
+- user registration with Django password validation
+- sign in with Django authentication
+- authenticated session handling
+- CSRF-protected sign out
+
+### Administration
+Django Admin can be used to manage movies, genres, people, participation roles, and profiles.
+
+## Architecture
+
+```text
+.
+├── config/             # Django project configuration
+├── imdb/               # Main application
+│   ├── migrations/
+│   ├── static/
+│   ├── templates/
+│   ├── admin.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── data/
+│   └── demo.sqlite3    # Optional preloaded demo database
+├── media_files/        # Demo media
+├── manage.py
+├── requirements.txt
+├── requirements-dev.txt
+└── pyproject.toml
+```
+
+The application deliberately keeps the architecture simple: standard Django models, generic/class-based views, built-in authentication, templates, and a small dependency set.
 
 ## Local setup
 
-Create and activate a virtual environment, then install dependencies:
+### 1. Create a virtual environment
 
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
 
-On Windows PowerShell:
+Windows PowerShell:
 
-    .venv\Scripts\Activate.ps1
+```powershell
+.venv\Scripts\Activate.ps1
+```
 
-For an empty development database:
+### 2. Install dependencies
 
-    python manage.py migrate
+```bash
+pip install -r requirements.txt
+```
 
-For the preloaded demo data:
+### 3. Choose a database
 
-    cp data/demo.sqlite3 db.sqlite3
-    python manage.py migrate
+Start with an empty database:
 
-Run the app:
+```bash
+python manage.py migrate
+```
 
-    python manage.py runserver
+Or use the included demo data:
 
-Open http://127.0.0.1:8000/
+```bash
+cp data/demo.sqlite3 db.sqlite3
+python manage.py migrate
+```
+
+### 4. Run the application
+
+```bash
+python manage.py runserver
+```
+
+Open `http://127.0.0.1:8000/`.
 
 ## Environment variables
 
-Production values should be provided through the environment:
+For local development, sensible development defaults are provided. For deployment, configure:
 
-- DJANGO_SECRET_KEY
-- DJANGO_DEBUG
-- DJANGO_ALLOWED_HOSTS
-- DJANGO_CSRF_TRUSTED_ORIGINS
+```text
+DJANGO_SECRET_KEY
+DJANGO_DEBUG
+DJANGO_ALLOWED_HOSTS
+DJANGO_CSRF_TRUSTED_ORIGINS
+```
 
-The defaults are intentionally development-oriented. Never use the fallback secret key for a real deployment.
+Example values are documented in `.env.example`.
 
 ## Quality checks
 
-    pip install -r requirements-dev.txt
-    ruff check config imdb manage.py
-    python manage.py makemigrations --check --dry-run
-    python manage.py check
-    python manage.py test
+Install development dependencies:
 
-The same checks run in CI on Python 3.13 and 3.14.
+```bash
+pip install -r requirements-dev.txt
+```
 
-## Main features
+Run the same checks used by CI:
 
-- featured movies ordered by rating
-- movie catalog with title/genre search
-- movie detail pages with cast, directors and genres
-- people directory and filmography
-- genre pages
-- sign up, sign in and CSRF-protected sign out
-- Django admin for catalog management
+```bash
+ruff check config imdb manage.py
+python manage.py makemigrations --check --dry-run
+python manage.py check
+python manage.py test
+```
 
-## Notes
+GitHub Actions runs the full quality pipeline on Python 3.13 and 3.14.
 
-This is a portfolio/demo application. The committed media and data/demo.sqlite3 exist only to make the project easy to evaluate locally. Runtime database files and new media uploads are ignored by Git.
+## Engineering decisions
+
+### Django-native authentication
+Authentication uses Django's built-in forms and auth views rather than duplicating password and session logic.
+
+### Environment-based settings
+Secrets and deployment-sensitive values are kept outside source code.
+
+### Small dependency surface
+The project avoids unnecessary packages when built-in Django functionality or simple URLs are sufficient.
+
+### Deterministic content selection
+Featured content uses explicit ordering rather than expensive random database ordering.
+
+### Repository hygiene
+IDE metadata, Python caches, runtime databases, and generated files are excluded from active source control.
+
+## Current scope
+
+MovieShelf is intentionally a focused portfolio application rather than a full commercial IMDb clone.
+
+The next production-oriented extensions would be:
+
+- Docker
+- PostgreSQL
+- deployment pipeline
+- test coverage reporting
+- integration/browser tests
+- live demo and screenshots
+
+## License
+
+This repository is intended as a personal portfolio and demonstration project.
