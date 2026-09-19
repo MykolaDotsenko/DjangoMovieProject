@@ -1,47 +1,50 @@
 # MovieShelf
 
-**A modern Django movie catalog focused on clean backend architecture, secure authentication, relational data modeling, and reliable engineering practices.**
+**A modern Django movie catalog focused on clean backend architecture, secure authentication, relational data integrity, and reliable engineering practices.**
 
 MovieShelf lets users browse movies, genres, cast and directors, search the catalog, explore filmographies, and create accounts through Django's built-in authentication system.
 
 ## Highlights
 
-- **Django 5.2 LTS** with a clean `config/` + app structure
+- **Django 5.2 LTS** with a clean `config/` + application structure
 - relational modeling for **movies, genres, people, and participation roles**
+- database-level constraints for ratings, durations, unique genres, and duplicate credits
 - search by **movie title or genre**
 - movie detail pages with **cast, directors, genres, ratings, trailers, and metadata**
 - people directory with **filmography**
 - Django-native **sign up, sign in, password validation, and CSRF-protected sign out**
 - responsive server-rendered UI with **Bootstrap 5**
-- environment-based configuration for secrets, debug mode, hosts, and CSRF origins
-- automated tests for core user flows
-- **Ruff + Django checks + migration consistency + tests** in GitHub Actions
+- environment-based configuration with fail-fast production settings
+- SQLite for zero-friction local/demo use and optional **PostgreSQL-ready configuration**
+- database-backed `/health/` readiness endpoint
+- console logging with environment-controlled log level
+- **27+ automated tests, 99% application coverage, Ruff, migration checks, demo-database migration checks, and deployment checks**
 - CI verified on **Python 3.13 and 3.14**
 
 ## Why this project is portfolio-ready
 
-This project was modernized from an earlier learning application into a cleaner, maintainable Django codebase.
+MovieShelf was modernized from an earlier learning application into a deliberately small, maintainable Django codebase.
 
-The focus is not only on features, but on engineering quality:
+The focus is not on adding layers for their own sake. The project relies on Django's built-in strengths:
 
-- conventional project structure
-- framework-native authentication instead of custom password logic
-- deterministic and readable ORM queries
-- reduced dependency surface
-- repository hygiene
-- automated validation in CI
-- responsive and accessible UI states
-- clear local setup and demo data
+- models and database constraints own data integrity
+- forms own input validation
+- generic/class-based views orchestrate requests and querysets
+- templates own presentation
+- Django authentication owns password and session behavior
+- CI continuously verifies formatting, migrations, tests, coverage, demo-data compatibility, and deployment settings
+
+This keeps the architecture predictable for another Django developer without introducing unnecessary service, repository, or dependency-injection layers.
 
 ## Tech stack
 
 | Area | Technology |
 | --- | --- |
 | Backend | Python, Django 5.2 LTS |
-| Database | SQLite for local/demo use |
+| Database | SQLite locally; PostgreSQL-ready production configuration |
 | Frontend | Django Templates, Bootstrap 5, CSS |
 | Media | Pillow |
-| Quality | Ruff, Django system checks, automated tests |
+| Quality | Ruff, coverage.py, Django system/deployment checks |
 | CI | GitHub Actions |
 | Supported Python | 3.13, 3.14 |
 
@@ -70,33 +73,48 @@ The focus is not only on features, but on engineering quality:
 - CSRF-protected sign out
 
 ### Administration
-Django Admin can be used to manage movies, genres, people, participation roles, and profiles.
+Django Admin manages movies, genres, people, and participation roles.
+
+### Operational readiness
+- `GET /health/` checks that the application can reach its configured database
+- unhealthy database connections return HTTP `503`
+- health responses are marked `Cache-Control: no-store`
+- production mode fails fast when required security/database configuration is missing
+- logging goes to the console and is controlled with `DJANGO_LOG_LEVEL`
 
 ## Architecture
 
 ```text
 .
-├── config/             # Django project configuration
-├── imdb/               # Main application
+├── config/
+│   ├── settings.py      # environment, database, logging, security
+│   ├── urls.py
+│   └── views.py         # infrastructure health check
+├── imdb/
 │   ├── migrations/
 │   ├── static/
 │   ├── templates/
+│   ├── tests/
+│   │   ├── test_auth.py
+│   │   ├── test_models.py
+│   │   ├── test_movies.py
+│   │   └── test_people.py
 │   ├── admin.py
 │   ├── forms.py
 │   ├── models.py
-│   ├── tests.py
 │   ├── urls.py
 │   └── views.py
 ├── data/
-│   └── demo.sqlite3    # Optional preloaded demo database
-├── media_files/        # Demo media
+│   └── demo.sqlite3
+├── media_files/
 ├── manage.py
 ├── requirements.txt
 ├── requirements-dev.txt
+├── requirements-postgres.txt
 └── pyproject.toml
 ```
 
-The application deliberately keeps the architecture simple: standard Django models, generic/class-based views, built-in authentication, templates, and a small dependency set.
+The application deliberately keeps one domain app because the current domain is cohesive. Splitting it into multiple apps or adding service/repository layers would add ceremony without improving maintainability at this size.
 
 ## Local setup
 
@@ -116,12 +134,12 @@ Windows PowerShell:
 ### 2. Install dependencies
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-### 3. Choose a database
+### 3. Choose a local database
 
-Start with an empty database:
+Start with an empty SQLite database:
 
 ```bash
 python manage.py migrate
@@ -142,67 +160,108 @@ python manage.py runserver
 
 Open `http://127.0.0.1:8000/`.
 
+The health endpoint is available at `http://127.0.0.1:8000/health/`.
+
+## PostgreSQL-ready configuration
+
+SQLite remains the default because it makes the repository easy to clone and evaluate.
+
+For PostgreSQL, install the optional driver:
+
+```bash
+python -m pip install -r requirements-postgres.txt
+```
+
+Then configure:
+
+```text
+DJANGO_DATABASE_BACKEND=postgresql
+DJANGO_DB_NAME=movieshelf
+DJANGO_DB_USER=movieshelf
+DJANGO_DB_PASSWORD=...
+DJANGO_DB_HOST=...
+DJANGO_DB_PORT=5432
+DJANGO_DB_CONN_MAX_AGE=60
+```
+
+Django 5.2 supports PostgreSQL 14+ and recommends Psycopg 3.
+
 ## Environment variables
 
-For local development, sensible development defaults are provided. For deployment, configure:
+The complete example is in `.env.example`.
+
+Important production values include:
 
 ```text
 DJANGO_SECRET_KEY
-DJANGO_DEBUG
+DJANGO_DEBUG=false
 DJANGO_ALLOWED_HOSTS
 DJANGO_CSRF_TRUSTED_ORIGINS
+DJANGO_DATABASE_BACKEND
+DJANGO_LOG_LEVEL
 ```
 
-Example values are documented in `.env.example`.
+When PostgreSQL is selected, missing database credentials fail fast with a clear configuration error.
 
 ## Quality checks
 
 Install development dependencies:
 
 ```bash
-pip install -r requirements-dev.txt
+python -m pip install -r requirements-dev.txt
 ```
 
-Run the same checks used by CI:
+Run the same core checks used by CI:
 
 ```bash
-ruff check config imdb manage.py
+ruff check .
+ruff format --check .
 python manage.py makemigrations --check --dry-run
 python manage.py check
-python manage.py test
+coverage run manage.py test
+coverage report
 ```
 
-GitHub Actions runs the full quality pipeline on Python 3.13 and 3.14.
+CI additionally:
+
+- migrates the committed demo database to catch real-data migration regressions
+- enforces a coverage floor
+- runs Django's production `check --deploy --fail-level WARNING`
+- validates the project on Python 3.13 and 3.14
 
 ## Engineering decisions
 
-### Django-native authentication
-Authentication uses Django's built-in forms and auth views rather than duplicating password and session logic.
+### Django-native architecture
+The code follows Django's standard MVT model and generic views instead of reproducing framework features behind additional layers.
+
+### Database constraints as invariants
+Important rules are enforced by the database as well as application validation, preventing invalid states from being created through code paths outside forms.
 
 ### Environment-based settings
-Secrets and deployment-sensitive values are kept outside source code.
+Secrets and deployment-sensitive values remain outside source control. Production configuration fails early when critical values are missing.
+
+### SQLite locally, PostgreSQL-ready when needed
+SQLite keeps evaluation simple. PostgreSQL support is opt-in so the local developer experience does not gain unnecessary dependencies.
 
 ### Small dependency surface
-The project avoids unnecessary packages when built-in Django functionality or simple URLs are sufficient.
+Optional PostgreSQL support lives in a separate requirements file; the default application remains lightweight.
 
-### Deterministic content selection
-Featured content uses explicit ordering rather than expensive random database ordering.
+### Operational checks without infrastructure sprawl
+A database-aware health endpoint and console logging provide useful deployment primitives without adding Docker, Redis, Celery, or a monitoring framework.
 
-### Repository hygiene
-IDE metadata, Python caches, runtime databases, and generated files are excluded from active source control.
+## Portfolio status
 
-## Current scope
+The codebase, tests, CI, and deployment configuration are intentionally production-conscious, while the repository remains easy to run locally.
 
-MovieShelf is intentionally a focused portfolio application rather than a full commercial IMDb clone.
+Still intentionally outside this repository:
 
-The next production-oriented extensions would be:
+- hosting-provider-specific deployment configuration
+- live demo URL
+- real UI screenshots captured from a deployed/running environment
+- external monitoring/error-reporting service
+- backup infrastructure
 
-- Docker
-- PostgreSQL
-- deployment pipeline
-- test coverage reporting
-- integration/browser tests
-- live demo and screenshots
+Those should be added only when a real deployment target exists rather than simulated in source code.
 
 ## License
 
