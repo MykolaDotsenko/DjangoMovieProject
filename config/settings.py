@@ -20,6 +20,13 @@ def env_list(name: str, default: tuple[str, ...] = ()) -> list[str]:
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+def required_env(name: str) -> str:
+    value = os.getenv(name)
+    if value:
+        return value
+    raise ImproperlyConfigured(f"{name} must be set for the selected configuration.")
+
+
 DEBUG = env_bool("DJANGO_DEBUG", True)
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
@@ -78,12 +85,32 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+DATABASE_BACKEND = os.getenv("DJANGO_DATABASE_BACKEND", "sqlite").strip().lower()
+
+if DATABASE_BACKEND == "sqlite":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+elif DATABASE_BACKEND == "postgresql":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": required_env("DJANGO_DB_NAME"),
+            "USER": required_env("DJANGO_DB_USER"),
+            "PASSWORD": required_env("DJANGO_DB_PASSWORD"),
+            "HOST": required_env("DJANGO_DB_HOST"),
+            "PORT": os.getenv("DJANGO_DB_PORT", "5432"),
+            "CONN_MAX_AGE": int(os.getenv("DJANGO_DB_CONN_MAX_AGE", "60")),
+            "CONN_HEALTH_CHECKS": True,
+        }
+    }
+else:
+    raise ImproperlyConfigured(
+        "DJANGO_DATABASE_BACKEND must be either 'sqlite' or 'postgresql'."
+    )
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -107,6 +134,30 @@ LOGIN_URL = "imdb:login"
 LOGIN_REDIRECT_URL = "imdb:index"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOG_LEVEL = os.getenv("DJANGO_LOG_LEVEL", "INFO" if not DEBUG else "WARNING").upper()
+VALID_LOG_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
+if LOG_LEVEL not in VALID_LOG_LEVELS:
+    raise ImproperlyConfigured(
+        f"DJANGO_LOG_LEVEL must be one of {', '.join(sorted(VALID_LOG_LEVELS))}."
+    )
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
+    },
+}
 
 if not DEBUG:
     SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", True)
