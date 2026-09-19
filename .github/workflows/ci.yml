@@ -50,6 +50,13 @@ jobs:
           DJANGO_SECRET_KEY: ci-development-secret
         run: python manage.py check
 
+      - name: Verify demo database migration
+        env:
+          DJANGO_SECRET_KEY: ci-development-secret
+        run: |
+          cp data/demo.sqlite3 db.sqlite3
+          python manage.py migrate --noinput
+
       - name: Tests with coverage
         env:
           DJANGO_SECRET_KEY: ci-development-secret
