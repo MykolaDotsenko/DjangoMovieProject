@@ -1,128 +1,89 @@
-{% extends 'imdb/base.html' %} {% load static %} {% load embed_video_tags %}
-{%block title %}{{ object.title }}{% endblock %} {% block main %}
-<div class="container py-4">
-  <div class="row">
-    <div class="col-md-6 d-flex flex-column justify-content-between">
-      <div>
-        <h1 class="text-light display-5 fw-bold">{{ object.title }}</h1>
-        <div class="d-flex align-items-center mb-3">
-          <span class="badge bg-secondary me-2 fs-6">
-            {{ object.get_age_rating_display }}
-          </span>
-          <span class="text-light me-2"
-            >{{ object.release_date|date:"Y" }}</span
-          >
-          <span class="text-light me-2">&#8226;</span>
-          <span class="text-light me-2">{{ object.duration }} min</span>
-          <span class="text-light ms-3">
-            <span class="text-warning fs-4"
-              ><i class="fa-solid fa-star"></i
-            ></span>
-            <span class="fs-5">{{ object.rating|floatformat:1 }}</span>
-            <span class="text-secondary">/10</span>
-          </span>
+{% extends 'imdb/base.html' %}
+{% load static %}
+{% block title %}{{ object.title }} · MovieShelf{% endblock %}
+
+{% block main %}
+<section class="pt-5">
+  <a class="small link-warning text-decoration-none" href="{% url 'imdb:movie-list' %}">
+    <i class="fa-solid fa-arrow-left me-1"></i> Back to movies
+  </a>
+
+  <div class="row g-4 mt-1">
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="poster-wrap rounded-4">
+        {% if object.poster %}
+          <img src="{{ object.poster.url }}" alt="{{ object.title }} poster">
+        {% else %}
+          <div class="poster-placeholder"><i class="fa-regular fa-image"></i></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-12 col-md-8 col-lg-9">
+      <div class="detail-panel p-4 p-lg-5 h-100">
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+          <span class="badge text-bg-warning">{{ object.get_age_rating_display }}</span>
+          {% if object.release_date %}<span class="text-muted-app">{{ object.release_date|date:"Y" }}</span>{% endif %}
+          {% if object.duration %}<span class="text-muted-app">{{ object.duration }} min</span>{% endif %}
         </div>
-        <a
-          href="{{ object.wiki_link }}"
-          target="_blank"
-          class="text-info mb-2 fs-6 d-block"
-        >
-          <i class="fa-brands fa-wikipedia-w"></i> Wikipedia
-        </a>
+
+        <h1 class="display-5 fw-bold mb-3">{{ object.title }}</h1>
+        <div class="rating fs-4 mb-4">
+          <i class="fa-solid fa-star"></i> {{ object.rating|floatformat:1 }}<span class="text-muted-app fs-6">/10</span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mb-4">
+          {% for genre in object.genres.all %}
+            <a class="genre-chip" href="{% url 'imdb:genre-detail' pk=genre.pk %}">{{ genre }}</a>
+          {% endfor %}
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+          {% if object.trailer %}
+            <a class="btn btn-warning" href="{{ object.trailer }}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-play me-1"></i> Watch trailer</a>
+          {% endif %}
+          {% if object.wiki_link %}
+            <a class="btn btn-outline-light" href="{{ object.wiki_link }}" target="_blank" rel="noopener noreferrer">Wikipedia</a>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>
-  <div class="row bg-dark rounded shadow p-3">
-    <div class="col-md-3 text-center mb-3 mb-md-0">
-      {% if object.poster %}
-      <img
-        src="{{ object.poster.url }}"
-        alt="{{ object.title }}"
-        class="img-fluid rounded border border-secondary shadow-sm"
-        style="max-height: 420px"
-      />
-      {% endif %}
-    </div>
+</section>
 
-    <div class="col-md-6 d-none d-md-block">
-      <div
-        class="ratio ratio-16x9 bg-black border border-secondary rounded overflow-hidden"
-      >
-        {% video object.trailer 'medium' %}
+<section class="row g-4 mt-2">
+  <div class="col-12 col-lg-6">
+    <div class="detail-panel p-4 h-100">
+      <h2 class="h4 mb-3">Cast</h2>
+      <div class="d-grid gap-3">
+        {% for actor in actors %}
+          <a class="d-flex align-items-center gap-3 text-decoration-none text-light" href="{% url 'imdb:person-detail' pk=actor.pk %}">
+            <div class="rounded-circle overflow-hidden bg-secondary" style="width:56px;height:56px;flex:0 0 56px;">
+              {% if actor.portrait %}<img class="w-100 h-100 object-fit-cover" src="{{ actor.portrait.url }}" alt="{{ actor }}">
+              {% else %}<img class="w-100 h-100 object-fit-cover" src="{% static 'imdb/images/user.png' %}" alt="">{% endif %}
+            </div>
+            <span>{{ actor }}</span>
+          </a>
+        {% empty %}<p class="text-muted-app mb-0">No cast has been added yet.</p>{% endfor %}
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-6">
-      {% for genre in object.genres.all %}
-      <a
-        href="{% url 'imdb:genre-detail' pk=genre.id %}"
-        class="text-light text-decoration-none"
-        >{{genre}}</a
-      >
-      {% endfor %}
+
+  <div class="col-12 col-lg-6">
+    <div class="detail-panel p-4 h-100">
+      <h2 class="h4 mb-3">Directors</h2>
+      <div class="d-grid gap-3">
+        {% for director in directors %}
+          <a class="d-flex align-items-center gap-3 text-decoration-none text-light" href="{% url 'imdb:person-detail' pk=director.pk %}">
+            <div class="rounded-circle overflow-hidden bg-secondary" style="width:56px;height:56px;flex:0 0 56px;">
+              {% if director.portrait %}<img class="w-100 h-100 object-fit-cover" src="{{ director.portrait.url }}" alt="{{ director }}">
+              {% else %}<img class="w-100 h-100 object-fit-cover" src="{% static 'imdb/images/user.png' %}" alt="">{% endif %}
+            </div>
+            <span>{{ director }}</span>
+          </a>
+        {% empty %}<p class="text-muted-app mb-0">No directors have been added yet.</p>{% endfor %}
+      </div>
     </div>
   </div>
- <div class="row">
-    <div class="col-6">
-      <p>Cast:</p>
-      <div class="row">
-        {% for actor in object.get_actors %}
-        <div class="col-6">
-          <div class="row">
-            <div class="col-4">
-              <img
-                src="{{actor.portrait.url}}"
-                width="100"
-                height="100"
-                class="object-fit-cover rounded-circle"
-              />
-            </div>
-            <div class="col-8">
-              <a
-                href="{% url 'imdb:person-detail' pk=actor.id %}"
-                class="text-light text-decoration-none"
-                >{{actor}}</a
-              >
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-</div>
-
-
-<div class="row mt-4">
-    <div class="col-6">
-      <p>Directors:</p>
-      <div class="row">
-        {% for director in object.get_directors %}
-        <div class="col-6">
-          <div class="row">
-            <div class="col-4">
-              <img
-                src="{{director.portrait.url}}"
-                width="100"
-                height="100"
-                class="object-fit-cover rounded-circle"
-              />
-            </div>
-            <div class="col-8">
-              <a
-                href="{% url 'imdb:person-detail' pk=director.id %}"
-                class="text-light text-decoration-none"
-                >{{ director}}</a
-              >
-            </div>
-          </div>
-        </div>
-        {% empty %}
-        <div class="col">No directors listed.</div>
-        {% endfor %}
-      </div>
-    </div>
-</div>
-
-
+</section>
 {% endblock %}
