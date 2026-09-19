@@ -7,8 +7,8 @@ const accessibilityRoutes = [
   { name: "people catalog", path: "/people/" },
   { name: "movie detail", path: "/movies/1/" },
   { name: "person detail", path: "/people/1/" },
-  { name: "sign in", path: "/login/" },
-  { name: "sign up", path: "/signup/" },
+  { name: "sign in", path: "/auth/login/" },
+  { name: "sign up", path: "/auth/signup/" },
 ];
 
 for (const route of accessibilityRoutes) {
