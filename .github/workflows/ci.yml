@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main, modernize-django-portfolio]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13", "3.14"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Ruff
+        run: ruff check config imdb manage.py
+
+      - name: Check migrations
+        env:
+          DJANGO_SECRET_KEY: ci-only-secret
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Django system check
+        env:
+          DJANGO_SECRET_KEY: ci-only-secret
+        run: python manage.py check
+
+      - name: Tests
+        env:
+          DJANGO_SECRET_KEY: ci-only-secret
+        run: python manage.py test

@@ -1,0 +1,70 @@
+{% extends 'imdb/base.html' %}
+{% load static %}
+{% block title %}MovieShelf{% endblock %}
+
+{% block main %}
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow mb-2">Curated movie catalog</div>
+    <h1 class="display-4 fw-bold mb-3">Discover movies and the people behind them.</h1>
+    <p class="lead text-muted-app mb-4">Browse the catalog, explore cast and directors, or search by movie title and genre.</p>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-warning btn-lg" href="{% url 'imdb:movie-list' %}">Browse movies</a>
+      <a class="btn btn-outline-light btn-lg" href="{% url 'imdb:person-list' %}">Explore people</a>
+    </div>
+  </div>
+</section>
+
+<section class="mb-5">
+  <div class="section-heading">
+    <div><div class="eyebrow">Top rated</div><h2 class="h3 mb-0">Featured movies</h2></div>
+    <a class="link-warning text-decoration-none" href="{% url 'imdb:movie-list' %}">View all</a>
+  </div>
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+    {% for movie in movie_list %}
+      <div class="col">
+        <article class="movie-card h-100">
+          <a class="text-decoration-none text-light" href="{% url 'imdb:movie-detail' pk=movie.pk %}">
+            <div class="poster-wrap">
+              {% if movie.poster %}<img src="{{ movie.poster.url }}" alt="{{ movie.title }} poster">
+              {% else %}<div class="poster-placeholder"><i class="fa-regular fa-image"></i></div>{% endif %}
+            </div>
+            <div class="p-3">
+              <h3 class="h6 mb-2">{{ movie.title }}</h3>
+              <div class="d-flex justify-content-between gap-2 small">
+                <span class="rating"><i class="fa-solid fa-star"></i> {{ movie.rating|floatformat:1 }}</span>
+                {% if movie.release_date %}<span class="text-muted-app">{{ movie.release_date|date:"Y" }}</span>{% endif %}
+              </div>
+            </div>
+          </a>
+        </article>
+      </div>
+    {% empty %}<p class="text-muted-app">No movies have been added yet.</p>{% endfor %}
+  </div>
+</section>
+
+<section>
+  <div class="section-heading">
+    <div><div class="eyebrow">Credits</div><h2 class="h3 mb-0">People in the catalog</h2></div>
+    <a class="link-warning text-decoration-none" href="{% url 'imdb:person-list' %}">View all</a>
+  </div>
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+    {% for person in person_list %}
+      <div class="col">
+        <article class="person-card h-100">
+          <a class="text-decoration-none text-light" href="{% url 'imdb:person-detail' pk=person.pk %}">
+            <div class="person-photo">
+              {% if person.portrait %}<img src="{{ person.portrait.url }}" alt="{{ person }}">
+              {% else %}<img src="{% static 'imdb/images/user.png' %}" alt="">{% endif %}
+            </div>
+            <div class="p-3">
+              <h3 class="h6 mb-1">{{ person }}</h3>
+              <span class="small text-muted-app">{{ person.credit_count }} credit{{ person.credit_count|pluralize }}</span>
+            </div>
+          </a>
+        </article>
+      </div>
+    {% empty %}<p class="text-muted-app">No people have been added yet.</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}
