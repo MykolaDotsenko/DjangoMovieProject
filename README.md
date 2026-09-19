@@ -1,8 +1,29 @@
 # MovieShelf
 
+[![CI](https://github.com/MykolaDotsenko/DjangoMovieProject/actions/workflows/ci.yml/badge.svg)](https://github.com/MykolaDotsenko/DjangoMovieProject/actions/workflows/ci.yml)
+![Python 3.13–3.14](https://img.shields.io/badge/Python-3.13%E2%80%933.14-3776AB?logo=python&logoColor=white)
+![Django 5.2 LTS](https://img.shields.io/badge/Django-5.2%20LTS-092E20?logo=django&logoColor=white)
+![Coverage 97%](https://img.shields.io/badge/coverage-97%25-brightgreen)
+
 **A modern Django movie catalog focused on clean backend architecture, secure authentication, relational data integrity, and reliable engineering practices.**
 
 MovieShelf lets users browse movies, genres, cast and directors, search the catalog, explore filmographies, and create accounts through Django's built-in authentication system.
+
+## Screenshots
+
+### Desktop home
+
+![MovieShelf desktop home](docs/screenshots/home-desktop.png)
+
+### Movie catalog
+
+![MovieShelf movie catalog](docs/screenshots/movies-desktop.png)
+
+### Mobile
+
+<img src="docs/screenshots/home-mobile.png" alt="MovieShelf mobile home" width="390">
+
+> Screenshots are captured from the real Django application running with the included fictional demo fixture.
 
 ## Highlights
 
@@ -51,6 +72,8 @@ Important rules live close to the data and are enforced both by Django validatio
 │   ├── urls.py
 │   ├── views.py
 │   └── tests/
+├── docs/
+│   └── screenshots/
 ├── imdb/
 │   ├── fixtures/
 │   │   └── demo.json
@@ -215,7 +238,6 @@ Intentionally not simulated in source code:
 
 - hosting-provider-specific deployment configuration
 - live production URL
-- screenshots captured from a real deployed/running environment
 - external monitoring/error-reporting service
 - backup infrastructure
 
