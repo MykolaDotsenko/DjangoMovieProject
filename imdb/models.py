@@ -16,6 +16,9 @@ class Person(models.Model):
     birth_date = models.DateField(blank=True, null=True)
     wiki_link = models.URLField(blank=True)
 
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
     def get_featured_trailer(self):
         return (
             self.credits.exclude(movie__trailer="")
@@ -23,9 +26,6 @@ class Person(models.Model):
             .values_list("movie__trailer", flat=True)
             .first()
         )
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
 
 
 class Movie(models.Model):
@@ -70,12 +70,12 @@ class Movie(models.Model):
             ),
         ]
 
+    def __str__(self):
+        return self.title
+
     def genres_str(self):
         names = (genre.name for genre in self.genres.all())
         return ", ".join(sorted(names, key=str.casefold))
-
-    def __str__(self):
-        return self.title
 
 
 class Genre(models.Model):
