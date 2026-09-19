@@ -20,20 +20,23 @@
   </form>
 </section>
 
-<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
-  {% for movie in movies %}
-    <div class="col">
-      {% include "imdb/components/movie_card.html" with movie=movie only %}
-    </div>
-  {% empty %}
-    <div class="col-12">
-      <div class="detail-panel p-4">
-        <h2 class="h5">No results</h2>
-        <p class="text-muted-app mb-0">Try a different title or genre.</p>
+<section aria-labelledby="movie-results-heading">
+  <h2 id="movie-results-heading" class="visually-hidden">Movie results</h2>
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
+    {% for movie in movies %}
+      <div class="col">
+        {% include "imdb/components/movie_card.html" with movie=movie only %}
       </div>
-    </div>
-  {% endfor %}
-</div>
+    {% empty %}
+      <div class="col-12">
+        <div class="detail-panel p-4">
+          <h3 class="h5">No results</h3>
+          <p class="text-muted-app mb-0">Try a different title or genre.</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
 
 {% if is_paginated %}
   <nav class="mt-5" aria-label="Movie pagination">

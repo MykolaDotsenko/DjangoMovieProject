@@ -1,5 +1,4 @@
 {% extends 'imdb/base.html' %}
-{% load static %}
 {% block title %}{{ movie.title }} · MovieShelf{% endblock %}
 
 {% block main %}
@@ -13,7 +12,7 @@
     <div class="col-12 col-md-4 col-lg-3">
       <div class="poster-wrap rounded-4">
         {% if movie.poster %}
-          <img src="{{ movie.poster.url }}" alt="{{ movie.title }} poster">
+          <img src="{{ movie.poster.url }}" alt="{{ movie.title }} poster" decoding="async">
         {% else %}
           <div class="poster-placeholder" aria-label="No poster available">
             <i class="fa-regular fa-image" aria-hidden="true"></i>
@@ -93,13 +92,13 @@
                   class="w-100 h-100 object-fit-cover"
                   src="{{ actor.portrait.url }}"
                   alt="{{ actor }}"
+                  loading="lazy"
+                  decoding="async"
                 >
               {% else %}
-                <img
-                  class="w-100 h-100 object-fit-cover"
-                  src="{% static 'imdb/images/user.png' %}"
-                  alt=""
-                >
+                <div class="person-placeholder" aria-hidden="true">
+                  <i class="fa-solid fa-user"></i>
+                </div>
               {% endif %}
             </div>
             <span>{{ actor }}</span>
@@ -126,13 +125,13 @@
                   class="w-100 h-100 object-fit-cover"
                   src="{{ director.portrait.url }}"
                   alt="{{ director }}"
+                  loading="lazy"
+                  decoding="async"
                 >
               {% else %}
-                <img
-                  class="w-100 h-100 object-fit-cover"
-                  src="{% static 'imdb/images/user.png' %}"
-                  alt=""
-                >
+                <div class="person-placeholder" aria-hidden="true">
+                  <i class="fa-solid fa-user"></i>
+                </div>
               {% endif %}
             </div>
             <span>{{ director }}</span>

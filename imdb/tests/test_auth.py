@@ -68,6 +68,19 @@ class SignInViewTests(TestCase):
         self.assertRedirects(response, reverse("imdb:index"))
         self.assertIn("_auth_user_id", self.client.session)
 
+    def test_login_returns_user_to_requested_page(self):
+        destination = reverse("imdb:person-list")
+        response = self.client.post(
+            reverse("imdb:login"),
+            {
+                "username": self.user.username,
+                "password": "SafePortfolioPass123!",
+                "next": destination,
+            },
+        )
+
+        self.assertRedirects(response, destination)
+
     def test_login_rejects_invalid_credentials(self):
         response = self.client.post(
             reverse("imdb:login"),

@@ -7,106 +7,64 @@ MovieShelf lets users browse movies, genres, cast and directors, search the cata
 ## Highlights
 
 - **Django 5.2 LTS** with a clean `config/` + application structure
-- relational modeling for **movies, genres, people, and participation roles**
+- relational modeling for movies, genres, people, and participation roles
 - database-level constraints for ratings, durations, unique genres, and duplicate credits
-- search by **movie title or genre**
-- movie detail pages with **cast, directors, genres, ratings, trailers, and metadata**
-- people directory with **filmography**
-- Django-native **sign up, sign in, password validation, and CSRF-protected sign out**
-- responsive server-rendered UI with **Bootstrap 5**
-- environment-based configuration with fail-fast production settings
-- SQLite for zero-friction local/demo use and optional **PostgreSQL-ready configuration**
+- search by movie title or genre
+- movie detail pages with cast, directors, genres, ratings, trailers, and metadata
+- people directory with filmography
+- Django-native sign up, sign in, password validation, redirect-after-login, and CSRF-protected sign out
+- responsive server-rendered UI with **Bootstrap 5.3.8**
+- strict environment parsing with fail-fast production settings
+- SQLite for zero-friction local use and PostgreSQL verified in CI
 - database-backed `/health/` readiness endpoint
 - console logging with environment-controlled log level
-- **27+ automated tests, 99% application coverage, Ruff, migration checks, demo-database migration checks, and deployment checks**
-- CI verified on **Python 3.13 and 3.14**
-
-## Why this project is portfolio-ready
-
-MovieShelf was modernized from an earlier learning application into a deliberately small, maintainable Django codebase.
-
-The focus is not on adding layers for their own sake. The project relies on Django's built-in strengths:
-
-- models and database constraints own data integrity
-- forms own input validation
-- generic/class-based views orchestrate requests and querysets
-- templates own presentation
-- Django authentication owns password and session behavior
-- CI continuously verifies formatting, migrations, tests, coverage, demo-data compatibility, and deployment settings
-
-This keeps the architecture predictable for another Django developer without introducing unnecessary service, repository, or dependency-injection layers.
-
-## Tech stack
-
-| Area | Technology |
-| --- | --- |
-| Backend | Python, Django 5.2 LTS |
-| Database | SQLite locally; PostgreSQL-ready production configuration |
-| Frontend | Django Templates, Bootstrap 5, CSS |
-| Media | Pillow |
-| Quality | Ruff, coverage.py, Django system/deployment checks |
-| CI | GitHub Actions |
-| Supported Python | 3.13, 3.14 |
-
-## Core features
-
-### Movies
-- featured movies ordered by rating
-- paginated movie catalog
-- search by title and genre
-- movie detail pages
-- cast and director relationships
-- genre navigation
-- rating, release year, duration, age rating, trailer, and Wikipedia links
-
-### People
-- actors, directors, producers, and composers
-- paginated people directory
-- individual profile pages
-- filmography with participation role
-- featured trailer based on related movies
-
-### Accounts
-- user registration with Django password validation
-- sign in with Django authentication
-- authenticated session handling
-- CSRF-protected sign out
-
-### Administration
-Django Admin manages movies, genres, people, and participation roles.
-
-### Operational readiness
-- `GET /health/` checks that the application can reach its configured database
-- unhealthy database connections return HTTP `503`
-- health responses are marked `Cache-Control: no-store`
-- production mode fails fast when required security/database configuration is missing
-- logging goes to the console and is controlled with `DJANGO_LOG_LEVEL`
+- deterministic fictional demo data via a Django fixture
+- Ruff, format checks, migration checks, dependency auditing, coverage, deployment checks, and Dependabot
+- CI verified on **Python 3.13 and 3.14**, plus a real PostgreSQL service
 
 ## Architecture
+
+MovieShelf deliberately uses Django's standard architecture instead of adding layers for their own sake:
+
+```text
+URL
+ ↓
+View
+ ↓
+Model / ORM
+ ↓
+Database
+
+Form → input validation
+Template → presentation
+```
+
+Important rules live close to the data and are enforced both by Django validation and database constraints.
+
+## Project structure
 
 ```text
 .
 ├── config/
-│   ├── settings.py      # environment, database, logging, security
+│   ├── env.py
+│   ├── settings.py
 │   ├── urls.py
-│   └── views.py         # infrastructure health check
+│   ├── views.py
+│   └── tests/
 ├── imdb/
+│   ├── fixtures/
+│   │   └── demo.json
 │   ├── migrations/
 │   ├── static/
 │   ├── templates/
 │   ├── tests/
-│   │   ├── test_auth.py
-│   │   ├── test_models.py
-│   │   ├── test_movies.py
-│   │   └── test_people.py
 │   ├── admin.py
 │   ├── forms.py
 │   ├── models.py
 │   ├── urls.py
 │   └── views.py
-├── data/
-│   └── demo.sqlite3
-├── media_files/
+├── LICENSE
+├── THIRD_PARTY.md
 ├── manage.py
 ├── requirements.txt
 ├── requirements-dev.txt
@@ -114,11 +72,9 @@ Django Admin manages movies, genres, people, and participation roles.
 └── pyproject.toml
 ```
 
-The application deliberately keeps one domain app because the current domain is cohesive. Splitting it into multiple apps or adding service/repository layers would add ceremony without improving maintainability at this size.
-
 ## Local setup
 
-### 1. Create a virtual environment
+Create and activate a virtual environment:
 
 ```bash
 python -m venv .venv
@@ -131,28 +87,20 @@ Windows PowerShell:
 .venv\Scripts\Activate.ps1
 ```
 
-### 2. Install dependencies
+Install dependencies and create the database:
 
 ```bash
 python -m pip install -r requirements.txt
-```
-
-### 3. Choose a local database
-
-Start with an empty SQLite database:
-
-```bash
 python manage.py migrate
 ```
 
-Or use the included demo data:
+Load the optional fictional demo catalog:
 
 ```bash
-cp data/demo.sqlite3 db.sqlite3
-python manage.py migrate
+python manage.py loaddata demo
 ```
 
-### 4. Run the application
+Run the application:
 
 ```bash
 python manage.py runserver
@@ -160,19 +108,19 @@ python manage.py runserver
 
 Open `http://127.0.0.1:8000/`.
 
-The health endpoint is available at `http://127.0.0.1:8000/health/`.
+The readiness endpoint is available at `http://127.0.0.1:8000/health/`.
 
-## PostgreSQL-ready configuration
+## PostgreSQL
 
-SQLite remains the default because it makes the repository easy to clone and evaluate.
+SQLite remains the default because it makes the repository easy to evaluate.
 
-For PostgreSQL, install the optional driver:
+For PostgreSQL:
 
 ```bash
 python -m pip install -r requirements-postgres.txt
 ```
 
-Then configure:
+Configure:
 
 ```text
 DJANGO_DATABASE_BACKEND=postgresql
@@ -181,16 +129,20 @@ DJANGO_DB_USER=movieshelf
 DJANGO_DB_PASSWORD=...
 DJANGO_DB_HOST=...
 DJANGO_DB_PORT=5432
-DJANGO_DB_CONN_MAX_AGE=60
+DJANGO_DB_CONN_MAX_AGE=0
 ```
 
-Django 5.2 supports PostgreSQL 14+ and recommends Psycopg 3.
+`DJANGO_DB_CONN_MAX_AGE=0` is the safe default for ASGI. A positive value can be chosen deliberately for a WSGI deployment where persistent connections are appropriate.
+
+CI starts a real PostgreSQL service, runs migrations, loads the demo fixture, executes Django checks, and runs the test suite against PostgreSQL.
 
 ## Environment variables
 
-The complete example is in `.env.example`.
+See `.env.example` for the complete set.
 
-Important production values include:
+Boolean environment variables are parsed strictly. Invalid values fail fast instead of silently becoming false.
+
+Important production variables include:
 
 ```text
 DJANGO_SECRET_KEY
@@ -201,8 +153,6 @@ DJANGO_DATABASE_BACKEND
 DJANGO_LOG_LEVEL
 ```
 
-When PostgreSQL is selected, missing database credentials fail fast with a clear configuration error.
-
 ## Quality checks
 
 Install development dependencies:
@@ -211,9 +161,10 @@ Install development dependencies:
 python -m pip install -r requirements-dev.txt
 ```
 
-Run the same core checks used by CI:
+Run:
 
 ```bash
+pip-audit -r requirements-postgres.txt
 ruff check .
 ruff format --check .
 python manage.py makemigrations --check --dry-run
@@ -224,45 +175,54 @@ coverage report
 
 CI additionally:
 
-- migrates the committed demo database to catch real-data migration regressions
-- enforces a coverage floor
+- validates Python 3.13 and 3.14
+- loads and verifies the fictional demo fixture
+- runs against a real PostgreSQL service
 - runs Django's production `check --deploy --fail-level WARNING`
-- validates the project on Python 3.13 and 3.14
+- audits Python dependencies
+- enforces the coverage floor
+
+Dependabot checks both Python packages and GitHub Actions weekly.
 
 ## Engineering decisions
 
 ### Django-native architecture
-The code follows Django's standard MVT model and generic views instead of reproducing framework features behind additional layers.
+The project uses Django models, forms, generic/class-based views, templates, authentication, and database constraints directly. Additional service/repository layers would add ceremony without improving this codebase at its current size.
 
 ### Database constraints as invariants
-Important rules are enforced by the database as well as application validation, preventing invalid states from being created through code paths outside forms.
+Ratings, positive durations, unique genres, and duplicate credits are protected at the database level as well as through application validation.
 
-### Environment-based settings
-Secrets and deployment-sensitive values remain outside source control. Production configuration fails early when critical values are missing.
+### Strict environment configuration
+Boolean and integer environment values are validated explicitly. Critical production values fail fast with actionable configuration errors.
 
-### SQLite locally, PostgreSQL-ready when needed
-SQLite keeps evaluation simple. PostgreSQL support is opt-in so the local developer experience does not gain unnecessary dependencies.
+### SQLite locally, PostgreSQL in CI
+SQLite keeps onboarding simple. PostgreSQL compatibility is not only documented: it is exercised by CI against a real PostgreSQL service.
+
+### ASGI-safe database default
+Persistent PostgreSQL connections default to disabled. WSGI deployments can opt into a positive connection max age explicitly.
+
+### Fictional demo data
+The repository does not redistribute movie posters or celebrity photographs. The included fixture contains fictional catalog records with empty image fields, allowing the application to demonstrate its UI using built-in placeholders.
 
 ### Small dependency surface
-Optional PostgreSQL support lives in a separate requirements file; the default application remains lightweight.
-
-### Operational checks without infrastructure sprawl
-A database-aware health endpoint and console logging provide useful deployment primitives without adding Docker, Redis, Celery, or a monitoring framework.
+PostgreSQL support remains optional. No Docker, Redis, Celery, service container, or monitoring SDK is required to understand or run the project.
 
 ## Portfolio status
 
-The codebase, tests, CI, and deployment configuration are intentionally production-conscious, while the repository remains easy to run locally.
+The core application, architecture, tests, CI, security settings, PostgreSQL compatibility, health check, and dependency automation are implemented.
 
-Still intentionally outside this repository:
+Intentionally not simulated in source code:
 
 - hosting-provider-specific deployment configuration
-- live demo URL
-- real UI screenshots captured from a deployed/running environment
+- live production URL
+- screenshots captured from a real deployed/running environment
 - external monitoring/error-reporting service
 - backup infrastructure
 
-Those should be added only when a real deployment target exists rather than simulated in source code.
+Those should be added when an actual hosting target exists.
 
-## License
+## License and third-party software
 
-This repository is intended as a personal portfolio and demonstration project.
+The repository source is covered by the root `LICENSE` file.
+
+Third-party libraries and their licensing context are documented in `THIRD_PARTY.md`.

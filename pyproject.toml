@@ -11,8 +11,12 @@ quote-style = "double"
 
 [tool.coverage.run]
 branch = true
-source = ["imdb"]
+source = ["config", "imdb"]
 omit = [
+    "config/asgi.py",
+    "config/settings.py",
+    "config/tests/*",
+    "config/wsgi.py",
     "imdb/admin.py",
     "imdb/apps.py",
     "imdb/migrations/*",

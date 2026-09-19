@@ -3,29 +3,9 @@ from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 
+from .env import env_bool, env_int, env_list, required_env
+
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-def env_bool(name: str, default: bool = False) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
-
-
-def env_list(name: str, default: tuple[str, ...] = ()) -> list[str]:
-    value = os.getenv(name)
-    if value is None:
-        return list(default)
-    return [item.strip() for item in value.split(",") if item.strip()]
-
-
-def required_env(name: str) -> str:
-    value = os.getenv(name)
-    if value:
-        return value
-    raise ImproperlyConfigured(f"{name} must be set for the selected configuration.")
-
 
 DEBUG = env_bool("DJANGO_DEBUG", True)
 
@@ -95,6 +75,7 @@ if DATABASE_BACKEND == "sqlite":
         }
     }
 elif DATABASE_BACKEND == "postgresql":
+    connection_max_age = env_int("DJANGO_DB_CONN_MAX_AGE", 0, minimum=0)
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -102,9 +83,9 @@ elif DATABASE_BACKEND == "postgresql":
             "USER": required_env("DJANGO_DB_USER"),
             "PASSWORD": required_env("DJANGO_DB_PASSWORD"),
             "HOST": required_env("DJANGO_DB_HOST"),
-            "PORT": os.getenv("DJANGO_DB_PORT", "5432"),
-            "CONN_MAX_AGE": int(os.getenv("DJANGO_DB_CONN_MAX_AGE", "60")),
-            "CONN_HEALTH_CHECKS": True,
+            "PORT": env_int("DJANGO_DB_PORT", 5432, minimum=1),
+            "CONN_MAX_AGE": connection_max_age,
+            "CONN_HEALTH_CHECKS": connection_max_age > 0,
         }
     }
 else:
@@ -161,7 +142,7 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", True)
     CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", True)
     SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", True)
-    SECURE_HSTS_SECONDS = int(os.getenv("DJANGO_SECURE_HSTS_SECONDS", "3600"))
+    SECURE_HSTS_SECONDS = env_int("DJANGO_SECURE_HSTS_SECONDS", 3600, minimum=0)
     SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool(
         "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS",
         False,
