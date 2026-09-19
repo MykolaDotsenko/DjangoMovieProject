@@ -33,10 +33,6 @@ def _search_movies_postgresql(queryset, query):
             search_rank=SearchRank(search_vector, search_query, cover_density=True),
             genre_match=Exists(genre_match),
         )
-        .filter(
-            Q(search_vector=search_query)
-            | Q(title__icontains=query)
-            | Q(genre_match=True)
-        )
+        .filter(Q(search_vector=search_query) | Q(title__icontains=query) | Q(genre_match=True))
         .order_by("-search_rank", "-genre_match", "title")
     )
