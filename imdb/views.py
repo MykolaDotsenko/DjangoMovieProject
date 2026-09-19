@@ -15,10 +15,9 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["featured_movies"] = Movie.objects.order_by("-rating", "title")[:6]
-        context["featured_people"] = (
-            Person.objects.annotate(credit_count=Count("credits"))
-            .order_by("-credit_count", "last_name", "first_name")[:6]
-        )
+        context["featured_people"] = Person.objects.annotate(
+            credit_count=Count("credits")
+        ).order_by("-credit_count", "last_name", "first_name")[:6]
         return context
 
 
@@ -58,14 +57,10 @@ class MovieDetailView(DetailView):
             )
         )
         context["actors"] = [
-            credit.person
-            for credit in credits
-            if credit.role == Participation.Role.ACTOR
+            credit.person for credit in credits if credit.role == Participation.Role.ACTOR
         ]
         context["directors"] = [
-            credit.person
-            for credit in credits
-            if credit.role == Participation.Role.DIRECTOR
+            credit.person for credit in credits if credit.role == Participation.Role.DIRECTOR
         ]
         return context
 
