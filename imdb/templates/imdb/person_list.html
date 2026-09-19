@@ -1,19 +1,37 @@
 {% extends 'imdb/base.html' %}
 {% load static %}
-{% block title %}Persons{% endblock %}
+{% block title %}People · MovieShelf{% endblock %}
 
 {% block main %}
-<h1 class="mb-4 text-warning">Persons</h1>
-<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+<section class="pt-5 pb-4">
+  <div class="eyebrow mb-2">Credits</div>
+  <h1 class="display-6 fw-bold">People</h1>
+  <p class="text-muted-app mb-0">Actors, directors, producers and composers in the catalog.</p>
+</section>
+
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
   {% for person in object_list %}
-  <div class="col text-center">
-    <a href="{% url 'imdb:person-detail' pk=person.id %}" class="text-decoration-none text-light">
-      {% if person.portrait %}
-        <img src="{{ person.portrait.url }}" class="rounded mb-2" style="width:100px; height:140px; object-fit:cover;">
-      {% endif %}
-      <div>{{ person.first_name }} {{ person.last_name }}</div>
-    </a>
-  </div>
-  {% endfor %}
+    <div class="col">
+      <article class="person-card h-100">
+        <a class="text-decoration-none text-light" href="{% url 'imdb:person-detail' pk=person.pk %}">
+          <div class="person-photo">
+            {% if person.portrait %}<img src="{{ person.portrait.url }}" alt="{{ person }}">
+            {% else %}<img src="{% static 'imdb/images/user.png' %}" alt="">{% endif %}
+          </div>
+          <div class="p-3"><h2 class="h6 mb-0">{{ person }}</h2></div>
+        </a>
+      </article>
+    </div>
+  {% empty %}<p class="text-muted-app">No people have been added yet.</p>{% endfor %}
 </div>
+
+{% if is_paginated %}
+<nav class="mt-5" aria-label="People pagination">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>{% endif %}
+    <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+    {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>{% endif %}
+  </ul>
+</nav>
+{% endif %}
 {% endblock %}
