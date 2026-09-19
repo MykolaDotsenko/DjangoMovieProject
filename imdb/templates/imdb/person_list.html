@@ -10,15 +10,18 @@
   </p>
 </section>
 
-<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
-  {% for person in people %}
-    <div class="col">
-      {% include "imdb/components/person_card.html" with person=person only %}
-    </div>
-  {% empty %}
-    <p class="text-muted-app">No people have been added yet.</p>
-  {% endfor %}
-</div>
+<section aria-labelledby="people-results-heading">
+  <h2 id="people-results-heading" class="visually-hidden">People results</h2>
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
+    {% for person in people %}
+      <div class="col">
+        {% include "imdb/components/person_card.html" with person=person only %}
+      </div>
+    {% empty %}
+      <p class="text-muted-app">No people have been added yet.</p>
+    {% endfor %}
+  </div>
+</section>
 
 {% if is_paginated %}
   <nav class="mt-5" aria-label="People pagination">

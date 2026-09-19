@@ -34,6 +34,9 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
 
+      - name: Dependency audit
+        run: pip-audit -r requirements-postgres.txt
+
       - name: Lint
         run: ruff check .
 
@@ -50,12 +53,14 @@ jobs:
           DJANGO_SECRET_KEY: ci-development-secret
         run: python manage.py check
 
-      - name: Verify demo database migration
+      - name: Verify demo fixture
         env:
           DJANGO_SECRET_KEY: ci-development-secret
         run: |
-          cp data/demo.sqlite3 db.sqlite3
           python manage.py migrate --noinput
+          python manage.py loaddata demo
+          python manage.py shell -c "from imdb.models import Movie, Person; assert Movie.objects.exists() and Person.objects.exists()"
+          rm -f db.sqlite3
 
       - name: Tests with coverage
         env:
@@ -75,3 +80,58 @@ jobs:
           DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS: "true"
           DJANGO_SECURE_HSTS_PRELOAD: "true"
         run: python manage.py check --deploy --fail-level WARNING
+
+  postgresql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: movieshelf
+          POSTGRES_USER: movieshelf
+          POSTGRES_PASSWORD: movieshelf-ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U movieshelf -d movieshelf"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DJANGO_SECRET_KEY: ci-postgresql-secret
+      DJANGO_DATABASE_BACKEND: postgresql
+      DJANGO_DB_NAME: movieshelf
+      DJANGO_DB_USER: movieshelf
+      DJANGO_DB_PASSWORD: movieshelf-ci
+      DJANGO_DB_HOST: 127.0.0.1
+      DJANGO_DB_PORT: "5432"
+      DJANGO_DB_CONN_MAX_AGE: "0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements-dev.txt
+          python -m pip install -r requirements-postgres.txt
+
+      - name: Migrate PostgreSQL
+        run: python manage.py migrate --noinput
+
+      - name: Load demo fixture
+        run: python manage.py loaddata demo
+
+      - name: PostgreSQL system check
+        run: python manage.py check
+
+      - name: PostgreSQL tests
+        run: python manage.py test

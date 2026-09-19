@@ -1,0 +1,239 @@
+[
+  {
+    "model": "imdb.genre",
+    "pk": 1,
+    "fields": {"name": "Drama"}
+  },
+  {
+    "model": "imdb.genre",
+    "pk": 2,
+    "fields": {"name": "Science Fiction"}
+  },
+  {
+    "model": "imdb.genre",
+    "pk": 3,
+    "fields": {"name": "Adventure"}
+  },
+  {
+    "model": "imdb.genre",
+    "pk": 4,
+    "fields": {"name": "Thriller"}
+  },
+  {
+    "model": "imdb.genre",
+    "pk": 5,
+    "fields": {"name": "Comedy"}
+  },
+  {
+    "model": "imdb.movie",
+    "pk": 1,
+    "fields": {
+      "title": "Signal Beyond",
+      "rating": "8.9",
+      "poster": "",
+      "release_date": "2025-03-14",
+      "duration": 132,
+      "age_rating": "PG-13",
+      "wiki_link": "",
+      "trailer": "",
+      "genres": [1, 2]
+    }
+  },
+  {
+    "model": "imdb.movie",
+    "pk": 2,
+    "fields": {
+      "title": "Northbound",
+      "rating": "8.4",
+      "poster": "",
+      "release_date": "2024-09-06",
+      "duration": 118,
+      "age_rating": "PG-13",
+      "wiki_link": "",
+      "trailer": "",
+      "genres": [1, 3]
+    }
+  },
+  {
+    "model": "imdb.movie",
+    "pk": 3,
+    "fields": {
+      "title": "The Quiet Protocol",
+      "rating": "8.1",
+      "poster": "",
+      "release_date": "2026-01-23",
+      "duration": 109,
+      "age_rating": "PG-13",
+      "wiki_link": "",
+      "trailer": "",
+      "genres": [2, 4]
+    }
+  },
+  {
+    "model": "imdb.movie",
+    "pk": 4,
+    "fields": {
+      "title": "Second Sunrise",
+      "rating": "7.8",
+      "poster": "",
+      "release_date": "2023-05-19",
+      "duration": 104,
+      "age_rating": "G",
+      "wiki_link": "",
+      "trailer": "",
+      "genres": [1, 5]
+    }
+  },
+  {
+    "model": "imdb.movie",
+    "pk": 5,
+    "fields": {
+      "title": "Glass Horizon",
+      "rating": "8.6",
+      "poster": "",
+      "release_date": "2025-11-07",
+      "duration": 126,
+      "age_rating": "PG-13",
+      "wiki_link": "",
+      "trailer": "",
+      "genres": [3, 4]
+    }
+  },
+  {
+    "model": "imdb.movie",
+    "pk": 6,
+    "fields": {
+      "title": "Paper Satellites",
+      "rating": "7.6",
+      "poster": "",
+      "release_date": "2024-02-16",
+      "duration": 97,
+      "age_rating": "G",
+      "wiki_link": "",
+      "trailer": "",
+      "genres": [2, 5]
+    }
+  },
+  {
+    "model": "imdb.person",
+    "pk": 1,
+    "fields": {
+      "last_name": "Vale",
+      "first_name": "Mira",
+      "gender": "f",
+      "portrait": "",
+      "birth_date": "1989-06-12",
+      "wiki_link": ""
+    }
+  },
+  {
+    "model": "imdb.person",
+    "pk": 2,
+    "fields": {
+      "last_name": "Mercer",
+      "first_name": "Jonas",
+      "gender": "m",
+      "portrait": "",
+      "birth_date": "1984-02-03",
+      "wiki_link": ""
+    }
+  },
+  {
+    "model": "imdb.person",
+    "pk": 3,
+    "fields": {
+      "last_name": "Chen",
+      "first_name": "Elena",
+      "gender": "f",
+      "portrait": "",
+      "birth_date": "1991-10-21",
+      "wiki_link": ""
+    }
+  },
+  {
+    "model": "imdb.person",
+    "pk": 4,
+    "fields": {
+      "last_name": "Hale",
+      "first_name": "Noah",
+      "gender": "m",
+      "portrait": "",
+      "birth_date": "1978-08-17",
+      "wiki_link": ""
+    }
+  },
+  {
+    "model": "imdb.person",
+    "pk": 5,
+    "fields": {
+      "last_name": "Ortiz",
+      "first_name": "Lena",
+      "gender": "f",
+      "portrait": "",
+      "birth_date": "1993-04-09",
+      "wiki_link": ""
+    }
+  },
+  {
+    "model": "imdb.person",
+    "pk": 6,
+    "fields": {
+      "last_name": "Stone",
+      "first_name": "Elias",
+      "gender": "m",
+      "portrait": "",
+      "birth_date": "1987-12-30",
+      "wiki_link": ""
+    }
+  },
+  {
+    "model": "imdb.participation",
+    "pk": 1,
+    "fields": {"movie": 1, "person": 1, "role": "A"}
+  },
+  {
+    "model": "imdb.participation",
+    "pk": 2,
+    "fields": {"movie": 1, "person": 4, "role": "D"}
+  },
+  {
+    "model": "imdb.participation",
+    "pk": 3,
+    "fields": {"movie": 2, "person": 2, "role": "A"}
+  },
+  {
+    "model": "imdb.participation",
+    "pk": 4,
+    "fields": {"movie": 2, "person": 5, "role": "D"}
+  },
+  {
+    "model": "imdb.participation",
+    "pk": 5,
+    "fields": {"movie": 3, "person": 3, "role": "A"}
+  },
+  {
+    "model": "imdb.participation",
+    "pk": 6,
+    "fields": {"movie": 3, "person": 6, "role": "D"}
+  },
+  {
+    "model": "imdb.participation",
+    "pk": 7,
+    "fields": {"movie": 4, "person": 1, "role": "A"}
+  },
+  {
+    "model": "imdb.participation",
+    "pk": 8,
+    "fields": {"movie": 5, "person": 2, "role": "A"}
+  },
+  {
+    "model": "imdb.participation",
+    "pk": 9,
+    "fields": {"movie": 5, "person": 4, "role": "D"}
+  },
+  {
+    "model": "imdb.participation",
+    "pk": 10,
+    "fields": {"movie": 6, "person": 3, "role": "A"}
+  }
+]

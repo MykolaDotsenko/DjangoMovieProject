@@ -1,4 +1,3 @@
-{% load static %}
 <article class="person-card h-100">
   <a
     class="text-decoration-none text-light"
@@ -6,13 +5,20 @@
   >
     <div class="person-photo">
       {% if person.portrait %}
-        <img src="{{ person.portrait.url }}" alt="{{ person }}">
+        <img
+          src="{{ person.portrait.url }}"
+          alt="{{ person }}"
+          loading="lazy"
+          decoding="async"
+        >
       {% else %}
-        <img src="{% static 'imdb/images/user.png' %}" alt="">
+        <div class="person-placeholder" aria-hidden="true">
+          <i class="fa-solid fa-user"></i>
+        </div>
       {% endif %}
     </div>
     <div class="p-3">
-      <h2 class="h6 mb-1">{{ person }}</h2>
+      <h3 class="h6 mb-1">{{ person }}</h3>
       {% if show_credit_count %}
         <span class="small text-muted-app">
           {{ person.credit_count }} credit{{ person.credit_count|pluralize }}

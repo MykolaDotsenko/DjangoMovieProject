@@ -10,6 +10,9 @@
 
     <form method="post" novalidate>
       {% csrf_token %}
+      {% if next %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ next }}">
+      {% endif %}
       {{ form.non_field_errors }}
       {% for field in form %}
         <div class="mb-3">

@@ -7,13 +7,16 @@
   <h1 class="display-6 fw-bold">{{ genre }}</h1>
 </section>
 
-<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
-  {% for movie in genre.movies.all %}
-    <div class="col">
-      {% include "imdb/components/movie_card.html" with movie=movie only %}
-    </div>
-  {% empty %}
-    <p class="text-muted-app">No movies in this genre yet.</p>
-  {% endfor %}
-</div>
+<section aria-labelledby="genre-movies-heading">
+  <h2 id="genre-movies-heading" class="visually-hidden">Movies in {{ genre }}</h2>
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
+    {% for movie in genre.movies.all %}
+      <div class="col">
+        {% include "imdb/components/movie_card.html" with movie=movie only %}
+      </div>
+    {% empty %}
+      <p class="text-muted-app">No movies in this genre yet.</p>
+    {% endfor %}
+  </div>
+</section>
 {% endblock %}

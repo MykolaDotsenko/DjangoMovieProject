@@ -1,5 +1,4 @@
 {% extends 'imdb/base.html' %}
-{% load static %}
 {% block title %}{{ person }} · MovieShelf{% endblock %}
 
 {% block main %}
@@ -13,9 +12,11 @@
     <div class="col-12 col-md-4 col-lg-3">
       <div class="person-photo rounded-4">
         {% if person.portrait %}
-          <img src="{{ person.portrait.url }}" alt="{{ person }}">
+          <img src="{{ person.portrait.url }}" alt="{{ person }}" decoding="async">
         {% else %}
-          <img src="{% static 'imdb/images/user.png' %}" alt="">
+          <div class="person-placeholder" aria-hidden="true">
+            <i class="fa-solid fa-user"></i>
+          </div>
         {% endif %}
       </div>
     </div>
