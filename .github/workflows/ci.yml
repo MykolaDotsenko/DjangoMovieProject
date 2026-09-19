@@ -60,7 +60,7 @@ jobs:
       - name: Deployment check
         env:
           DJANGO_DEBUG: "false"
-          DJANGO_SECRET_KEY: "ci-9xR!4vT2#pL8@kQ7%zN3&mW6*eY1-cS5+uA0=fH9?jB4"
+          DJANGO_SECRET_KEY: "ci-deployment-check-placeholder-abcdefghijklmnopqrstuvwxyz-0123456789"
           DJANGO_ALLOWED_HOSTS: "example.com"
           DJANGO_CSRF_TRUSTED_ORIGINS: "https://example.com"
           DJANGO_SECURE_SSL_REDIRECT: "true"
