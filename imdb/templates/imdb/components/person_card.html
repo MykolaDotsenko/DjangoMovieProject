@@ -1,0 +1,23 @@
+{% load static %}
+<article class="person-card h-100">
+  <a
+    class="text-decoration-none text-light"
+    href="{% url 'imdb:person-detail' pk=person.pk %}"
+  >
+    <div class="person-photo">
+      {% if person.portrait %}
+        <img src="{{ person.portrait.url }}" alt="{{ person }}">
+      {% else %}
+        <img src="{% static 'imdb/images/user.png' %}" alt="">
+      {% endif %}
+    </div>
+    <div class="p-3">
+      <h2 class="h6 mb-1">{{ person }}</h2>
+      {% if show_credit_count %}
+        <span class="small text-muted-app">
+          {{ person.credit_count }} credit{{ person.credit_count|pluralize }}
+        </span>
+      {% endif %}
+    </div>
+  </a>
+</article>
