@@ -27,9 +27,7 @@ if not SECRET_KEY:
     if DEBUG:
         SECRET_KEY = "django-insecure-development-only-change-me"
     else:
-        raise ImproperlyConfigured(
-            "DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is false."
-        )
+        raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is false.")
 
 default_hosts = ("localhost", "127.0.0.1", "testserver") if DEBUG else ()
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", default_hosts)
