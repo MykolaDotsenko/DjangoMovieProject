@@ -10,7 +10,12 @@ The browser UI references the following external libraries from their public CDN
 - Font Awesome Free 6.7.2 — see the Font Awesome project for the licenses applying to
   its icons, fonts, and code.
 
-Python dependencies are installed from PyPI and remain subject to their respective
-upstream licenses.
+Production/runtime Python dependencies such as Django, Psycopg, Gunicorn, WhiteNoise,
+and Pillow are installed from PyPI and remain subject to their upstream licenses.
+
+Browser quality checks use:
+
+- Playwright Test — Apache-2.0.
+- axe-core Playwright integration — MPL-2.0.
 
 The repository's own source code is covered by the root LICENSE file.

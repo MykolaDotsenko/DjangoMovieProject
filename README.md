@@ -30,7 +30,7 @@ MovieShelf lets users browse movies, genres, cast and directors, search the cata
 - **Django 5.2 LTS** with a clean `config/` + application structure
 - relational modeling for movies, genres, people, and participation roles
 - database-level constraints for ratings, durations, unique genres, and duplicate credits
-- search by movie title or genre
+- PostgreSQL ranked full-text search with web-style queries, plus partial title/genre matching
 - movie detail pages with cast, directors, genres, ratings, trailers, and metadata
 - people directory with filmography
 - Django-native sign up, sign in, password validation, redirect-after-login, and CSRF-protected sign out
@@ -41,6 +41,8 @@ MovieShelf lets users browse movies, genres, cast and directors, search the cata
 - console logging with environment-controlled log level
 - deterministic fictional demo data via a Django fixture
 - Ruff, format checks, migration checks, dependency auditing, coverage, deployment checks, and Dependabot
+- Playwright browser flows and axe WCAG A/AA accessibility checks on desktop and mobile
+- Gunicorn + WhiteNoise production configuration
 - CI verified on **Python 3.13 and 3.14**, plus a real PostgreSQL service
 
 ## Architecture
@@ -133,6 +135,19 @@ Open `http://127.0.0.1:8000/`.
 
 The readiness endpoint is available at `http://127.0.0.1:8000/health/`.
 
+## Search architecture
+
+Local SQLite keeps a simple `icontains` fallback so cloning and evaluating the project remains frictionless.
+
+On PostgreSQL, MovieShelf uses Django's PostgreSQL search primitives:
+
+- `SearchVector` and `SearchQuery(search_type="websearch")`
+- `SearchRank` for ranked title results
+- a GIN full-text index for movie titles
+- `pg_trgm` GIN indexes for partial title and genre matching
+
+This keeps the view layer small while allowing production search to scale beyond table scans.
+
 ## PostgreSQL
 
 SQLite remains the default because it makes the repository easy to evaluate.
@@ -174,6 +189,24 @@ DJANGO_ALLOWED_HOSTS
 DJANGO_CSRF_TRUSTED_ORIGINS
 DJANGO_DATABASE_BACKEND
 DJANGO_LOG_LEVEL
+```
+
+## Browser and accessibility testing
+
+Browser-level checks use Playwright with Chromium on desktop and mobile profiles.
+
+The suite verifies:
+
+- core public pages load successfully
+- the movie search → detail user flow
+- automated axe checks for WCAG A/AA rules across the main catalog, detail and authentication pages
+
+Run locally:
+
+```bash
+npm install
+npx playwright install chromium
+npm run test:e2e
 ```
 
 ## Quality checks
@@ -230,14 +263,37 @@ The repository does not redistribute movie posters or celebrity photographs. The
 ### Small dependency surface
 PostgreSQL support remains optional. No Docker, Redis, Celery, service container, or monitoring SDK is required to understand or run the project.
 
+## Deployment
+
+The repository includes a Render Blueprint (`render.yaml`) with:
+
+- a Django web service
+- managed PostgreSQL
+- Gunicorn
+- WhiteNoise static files
+- pre-deploy migrations
+- initial fictional demo data
+- `/health/` health checks
+- production security environment variables
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/MykolaDotsenko/DjangoMovieProject)
+
+The Blueprint is intentionally provider-specific and isolated from the Django architecture. No Docker layer is required.
+
 ## Portfolio status
 
 The core application, architecture, tests, CI, security settings, PostgreSQL compatibility, health check, and dependency automation are implemented.
 
-Intentionally not simulated in source code:
+Implemented in source code:
 
-- hosting-provider-specific deployment configuration
-- live production URL
+- production process/static-file configuration
+- Render Blueprint deployment
+- PostgreSQL full-text search
+- browser/E2E accessibility testing
+
+Still external to source control:
+
+- an activated live hosting account and final public URL
 - external monitoring/error-reporting service
 - backup infrastructure
 

@@ -14,7 +14,7 @@
         {% if movie.poster %}
           <img src="{{ movie.poster.url }}" alt="{{ movie.title }} poster" decoding="async">
         {% else %}
-          <div class="poster-placeholder" aria-label="No poster available">
+          <div class="poster-placeholder" role="img" aria-label="No poster available">
             <i class="fa-regular fa-image" aria-hidden="true"></i>
           </div>
         {% endif %}

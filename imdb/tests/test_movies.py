@@ -1,6 +1,8 @@
 from datetime import date
 from decimal import Decimal
+from unittest import skipUnless
 
+from django.db import connection
 from django.test import TestCase
 from django.urls import reverse
 
@@ -17,7 +19,7 @@ def create_movie(title, *, rating="8.0", release_date=None):
 
 
 class MovieListViewTests(TestCase):
-    def test_search_matches_title(self):
+    def test_search_matches_partial_title(self):
         create_movie("Interstellar")
         create_movie("Unrelated")
 
@@ -54,6 +56,59 @@ class MovieListViewTests(TestCase):
 
         self.assertEqual(len(first_page.context["movies"]), 12)
         self.assertEqual(len(second_page.context["movies"]), 1)
+
+    @skipUnless(connection.vendor == "postgresql", "PostgreSQL-specific full-text search")
+    def test_postgresql_search_supports_websearch_operators(self):
+        create_movie("Signal Beyond")
+        create_movie("Glass Horizon")
+        create_movie("Unrelated")
+
+        response = self.client.get(
+            reverse("imdb:movie-list"),
+            {"q": "Signal OR Horizon"},
+        )
+
+        titles = [movie.title for movie in response.context["movies"]]
+        self.assertEqual(titles, ["Glass Horizon", "Signal Beyond"])
+
+    @skipUnless(connection.vendor == "postgresql", "PostgreSQL-specific full-text search")
+    def test_postgresql_ranks_title_match_before_genre_only_match(self):
+        drama = Genre.objects.create(name="Drama")
+        direct_match = create_movie("Drama Signal")
+        genre_match = create_movie("Quiet Story")
+        genre_match.genres.add(drama)
+
+        response = self.client.get(reverse("imdb:movie-list"), {"q": "Drama"})
+
+        movies = list(response.context["movies"])
+        self.assertEqual(movies[0], direct_match)
+        self.assertIn(genre_match, movies)
+
+    @skipUnless(connection.vendor == "postgresql", "PostgreSQL-specific search indexes")
+    def test_postgresql_search_indexes_are_installed(self):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT indexname
+                FROM pg_indexes
+                WHERE schemaname = current_schema()
+                  AND indexname IN (
+                    'movie_title_fts_idx',
+                    'movie_title_trgm_idx',
+                    'genre_name_trgm_idx'
+                  )
+                """
+            )
+            index_names = {row[0] for row in cursor.fetchall()}
+
+        self.assertEqual(
+            index_names,
+            {
+                "movie_title_fts_idx",
+                "movie_title_trgm_idx",
+                "genre_name_trgm_idx",
+            },
+        )
 
 
 class MovieDetailViewTests(TestCase):

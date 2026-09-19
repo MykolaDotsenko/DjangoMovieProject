@@ -1,12 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Count, Prefetch
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from .forms import SignInForm, SignUpForm
 from .models import Genre, Movie, Participation, Person
+from .search import search_movies
 
 
 class IndexView(TemplateView):
@@ -29,11 +30,7 @@ class MovieListView(ListView):
     def get_queryset(self):
         queryset = Movie.objects.order_by("title")
         query = self.request.GET.get("q", "").strip()
-        if query:
-            queryset = queryset.filter(
-                Q(title__icontains=query) | Q(genres__name__icontains=query)
-            ).distinct()
-        return queryset
+        return search_movies(queryset, query)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
