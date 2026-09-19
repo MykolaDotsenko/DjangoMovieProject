@@ -5,14 +5,14 @@ services:
     region: frankfurt
     plan: free
     buildCommand: bash build.sh
-    preDeployCommand: python manage.py migrate --noinput
     initialDeployHook: python manage.py loaddata demo
     startCommand: >-
+      bash -c 'python manage.py migrate --noinput &&
       gunicorn config.wsgi:application
       --bind 0.0.0.0:$PORT
       --workers 2
       --threads 4
-      --timeout 60
+      --timeout 60'
     healthCheckPath: /health/
     autoDeployTrigger: checksPass
     envVars:
